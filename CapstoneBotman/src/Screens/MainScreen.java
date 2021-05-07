@@ -1,17 +1,23 @@
 package Screens;
 
+import Main.DrawingSurface;
+import g4p_controls.GButton;
+import g4p_controls.GLabel;
+
 public class MainScreen  extends Screen {
 
 	private int x, y;
 	private DrawingSurface surface;
 	
+	GButton instructions;
+	GLabel title;
+	
 	public MainScreen(int width, int height, DrawingSurface surface) {
 		super(width, height);
-		// TODO Auto-generated constructor stub
-	}
-
-	public void setup() {
+		this.surface = surface;
 		
+		x = 0;
+		y = 0;
 	}
 	
 }
