@@ -4,12 +4,12 @@ import Main.DrawingSurface;
 import g4p_controls.GButton;
 import g4p_controls.GLabel;
 
-public class MainScreen  extends Screen {
+public class MainScreen extends Screen {
 
 	private int x, y;
 	private DrawingSurface surface;
 	
-	GButton instructions;
+	GButton instructions, play;
 	GLabel title;
 	
 	public MainScreen(int width, int height, DrawingSurface surface) {
