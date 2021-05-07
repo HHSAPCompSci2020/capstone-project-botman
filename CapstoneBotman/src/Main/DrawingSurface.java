@@ -28,12 +28,12 @@ public class DrawingSurface extends PApplet {
 		
 		// Add all the screens
 		screens = new ArrayList<Screen>();
-		//screens.add(new MainScreen(9*50, 16*50, this));
-		//screens.add(new InstructionScreen(9*50, 16*50, this));
-		//screens.add(new ShopScreen(9*50, 16*50, this));
-		screens.add(new GameScreen(9*50, 16*50, this));
-		//screens.add(new PauseScreen(9*50, 16*50, this));
-		//screens.add(new WinScreen(9*50, 16*50, this));
+		screens.add(new MainScreen(400, 600, this));
+		screens.add(new InstructionScreen(400, 600, this));
+		screens.add(new ShopScreen(400, 600, this));
+		screens.add(new GameScreen(400, 600, this));
+		screens.add(new PauseScreen(400, 600, this));
+		screens.add(new WinScreen(400, 600, this));
 		
 		// Show the main menu screen first
 		activeScreen = screens.get(MAIN_SCREEN);
