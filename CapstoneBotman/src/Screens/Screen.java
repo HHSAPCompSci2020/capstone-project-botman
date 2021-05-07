@@ -2,4 +2,36 @@ package Screens;
 
 public abstract class Screen {
 
+	final int WIDTH;
+	final int HEIGHT;
+	
+	public Screen(int width, int height) {
+		this.DRAWING_WIDTH = width;
+		this.DRAWING_HEIGHT = height;
+	}
+	
+	public void setup() {
+		
+	}
+	
+	public void draw() {
+		
+	}
+	
+	public void mousePressed() {
+		
+	}
+	
+	public void mouseMoved() {
+		
+	}
+	
+	public void mouseDragged() {
+		
+	}
+	
+	public void mouseReleased() {
+		
+	}
+	
 }
