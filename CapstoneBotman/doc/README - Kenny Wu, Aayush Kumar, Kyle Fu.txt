@@ -166,12 +166,9 @@ Class List:[m]
 Credits:
 [Gives credit for project components. This includes both internal credit (your group members) and external credit (other people, websites, libraries). To do this:
 * List the group members and describe how each member contributed to the completion of the final program. This could be classes written, art assets created, leadership/organizational skills exercises, or other tasks. Initially, this is how you plan on splitting the work.
-   * Kenny 
-      * Sprite class, sprite art assets
-   * Aayush
-      * Weapon classes
-   * Kyle
-      * Player classes
+    Aayush: Screens (not Game screen)
+	Kenny: Sprites
+	Kyle: DrawingSurface & GameScreen
 * Give credit to all outside resources used. This includes downloaded images or sounds, external java libraries, parent/tutor/student coding help, etc.]
 
 
