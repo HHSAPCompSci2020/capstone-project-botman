@@ -1,5 +1,5 @@
 package Screens;
 
-public class MainScreen {
+public class MainScreen  extends Screen {
 
 }

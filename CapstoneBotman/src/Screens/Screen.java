@@ -2,12 +2,12 @@ package Screens;
 
 public abstract class Screen {
 
-	final int WIDTH;
-	final int HEIGHT;
+	private final int WIDTH;
+	private final int HEIGHT;
 	
 	public Screen(int width, int height) {
-		this.DRAWING_WIDTH = width;
-		this.DRAWING_HEIGHT = height;
+		this.WIDTH = width;
+		this.HEIGHT = height;
 	}
 	
 	public void setup() {
