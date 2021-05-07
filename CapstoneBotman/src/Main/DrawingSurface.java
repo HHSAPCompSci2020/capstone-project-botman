@@ -21,19 +21,19 @@ public class DrawingSurface extends PApplet {
 	private ArrayList<Integer> keys;
 	
 	private Screen activeScreen;
-	public ArrayList<Screen> screens;
+	private ArrayList<Screen> screens;
 	
 	public DrawingSurface() {
 		keys = new ArrayList<Integer>();
 		
 		// Add all the screens
 		screens = new ArrayList<Screen>();
-		screens.add(new MainScreen(this));
-		screens.add(new InstructionScreen(this));
-		screens.add(new ShopScreen(this));
-		screens.add(new GameScreen(this));
-		screens.add(new PauseScreen(this));
-		screens.add(new WinScreen(this));
+		//screens.add(new MainScreen(9*50, 16*50, this));
+		//screens.add(new InstructionScreen(9*50, 16*50, this));
+		//screens.add(new ShopScreen(9*50, 16*50, this));
+		screens.add(new GameScreen(9*50, 16*50, this));
+		//screens.add(new PauseScreen(9*50, 16*50, this));
+		//screens.add(new WinScreen(9*50, 16*50, this));
 		
 		// Show the main menu screen first
 		activeScreen = screens.get(MAIN_SCREEN);
@@ -98,6 +98,10 @@ public class DrawingSurface extends PApplet {
 	
 	public void switchScreen(int i) {
 		activeScreen = screens.get(i);
+	}
+	
+	public Screen getScreen(int i) {
+		return screens.get(i);
 	}
 	
 }

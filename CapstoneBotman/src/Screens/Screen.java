@@ -2,8 +2,8 @@ package Screens;
 
 public abstract class Screen {
 
-	private final int WIDTH;
-	private final int HEIGHT;
+	public final int WIDTH;
+	public final int HEIGHT;
 	
 	public Screen(int width, int height) {
 		this.WIDTH = width;
