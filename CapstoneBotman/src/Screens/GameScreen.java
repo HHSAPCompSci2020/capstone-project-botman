@@ -15,8 +15,8 @@ public class GameScreen extends Screen {
 	public GameScreen(int width, int height, DrawingSurface surface) {
 		super(width, height);
 		this.surface = surface;
-		runner = new Runner();
-		hunter = new Hunter();
+		// runner = new Runner(100, 100, 50, 50, surface);
+		// hunter = new Hunter(300, 300, 50, 50, surface);
 		// A round lasts 30 seconds
 		timer = 30 * 60;
 	}

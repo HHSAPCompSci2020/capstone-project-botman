@@ -22,7 +22,7 @@ Talk with your group. Consider drawing some pictures of what you think your proj
 
 VALHUNT
 Authors: Kenny Wu, Aayush Kumar, Kyle Fu
-Revision: 4/23/21
+Revision: 5/7/21
 
 
 * 2D manhunt style, “play time”
