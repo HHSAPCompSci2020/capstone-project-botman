@@ -47,7 +47,8 @@ public class DrawingSurface extends PApplet {
 		
 		// Show the main menu screen first
 		//activeScreen = screens.get(MAIN_SCREEN);
-		activeScreen = screens.get(GAME_SCREEN);
+		
+		activeScreen = screens.get(MAIN_SCREEN);
 	}
 	
 	/**

@@ -1,10 +1,10 @@
 package Sprites;
 
 import processing.core.PApplet;
-
+/**@author kennywu**/
 public class Runner extends Player{
 	
-	public static final String FILE_IMAGE_NAME = "";
+	public static final String FILE_IMAGE_NAME = "Runner.png";
 
 	public Runner(int x, int y, int width, int height, PApplet drawer) {
 		super(x, y, width, height, FILE_IMAGE_NAME, drawer);
