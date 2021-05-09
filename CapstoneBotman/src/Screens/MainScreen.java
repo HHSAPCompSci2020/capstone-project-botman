@@ -30,12 +30,18 @@ public class MainScreen extends Screen {
 		//title.addEventHandler(instructions, "handleButtonEvents");
 		instructions.addEventHandler(this, "handleButtonEvents");
 		play.addEventHandler(this, "handleButtonEvents");
+		
+		instructions.setVisible(false);
+		play.setVisible(false);
 	}
 	
 	public void draw() {
 		surface.pushStyle();
 		surface.background(0, 0, 0);
 		surface.fill(255, 255, 0);
+		
+		instructions.setVisible(true);
+		play.setVisible(true);
 		
 		// draws title and buttons
 //		title = new GLabel(surface, 150, 50, 500, 50, "VALHUNT");
