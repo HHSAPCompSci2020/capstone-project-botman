@@ -30,14 +30,27 @@ public abstract class Sprite {
 		this.width = width;
 		this.height = height;
 	}
-	
-	public Sprite(int width, int height) {
+	public Sprite(int width, int height, String fileName, PApplet drawer) {
 		this.width = width;
 		this.height = height;
+		this.image = drawer.loadImage(fileName);
 	}
+	
+	public Sprite(int x, int y, int width, int height, PImage image) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.image = image;
+	}
+	
 	
 	public void setImage(String fileName, PApplet drawer) {
 		this.image = drawer.loadImage(fileName);
+	}
+	
+	public void setImage(PImage image) {
+		this.image = image;
 	}
 	
 	/**

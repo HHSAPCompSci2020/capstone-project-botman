@@ -26,6 +26,26 @@ public abstract class Player extends Sprite{
 		int wins = 0;
 		int losses = 0;
 	}
+	
+	@Override
+	public void translate(int x, int y) {
+		super.translate(x, y);
+		weapon.setX(x);
+		weapon.setY(y);
+	}
+	
+	@Override 
+	public void setY(int y) {
+		super.setY(y);
+		weapon.setY(y);
+	}
+	
+	@Override 
+	public void setX(int x) {
+		super.setX(x);
+		weapon.setX(x);
+	}
+	
 	/**
 	 * Increments or decrements from health depending on
 	 * parameter being positive or negative respectively
@@ -51,6 +71,14 @@ public abstract class Player extends Sprite{
 		losses++;
 	}
 	
+	public Weapon getWeapon() {
+		return weapon;
+	}
+
+	public void setWeapon(Weapon weapon) {
+		this.weapon = weapon;
+	}
+
 	public int getCash() {
 		return cash;
 	}
@@ -88,10 +116,11 @@ public abstract class Player extends Sprite{
 		weapon.draw(drawer, angle);
 	}
 	
-	
-	public Bullet fire(PApplet drawer) {
-		return weapon.fire(drawer);
+	public Bullet fire() {
+		return weapon.fire();
 	}
+	
+	
 
 	
 	
