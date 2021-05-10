@@ -24,8 +24,7 @@ public class Weapon extends Sprite{
 		drawer.pushMatrix();
 		drawer.translate(x,y);
 		drawer.rotate((float) angle);
-		drawer.imageMode(drawer.CENTER);
-		drawer.image(image, width/2, height/2, width, height);
+		drawer.image(image, 0, 0, width, height);
 		drawer.popMatrix();
 		
 	}
