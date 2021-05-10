@@ -58,7 +58,7 @@ public class MainScreen extends Screen {
 	 * Sets up instructions button and play button
 	 */
 	public void setup() {
-		instructions = new GButton(surface, 90, 100, 200, 50, "Instrucitons");
+		instructions = new GButton(surface, 90, 100, 200, 50, "Instructions");
 		play = new GButton(surface, 90, 175, 200, 50, "Play");
 		
 		//title.addEventHandler(instructions, "handleButtonEvents");
