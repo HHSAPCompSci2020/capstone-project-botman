@@ -7,6 +7,7 @@ public abstract class Player extends Sprite{
 	private int cash;
 	private int health;
 	private int wins, losses; 
+	private int vX, vY; 
 	private Weapon weapon; 
 	
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer, int health
@@ -15,23 +16,47 @@ public abstract class Player extends Sprite{
 		weapon = new Weapon(x, y, width/2, height/4, drawer);
 		wins = 0;
 		losses = 0;
+		vX = 0;
+		vY =0;
 		
 	}
 	
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer) {
 		super(x, y, width, height, fileName, drawer);
 		weapon = new Weapon(x, y, width/2, height/4, drawer);
-		int cash = 0;
-		int health = 0;
-		int wins = 0;
-		int losses = 0;
+		cash = 0;
+		health = 0;
+		wins = 0;
+		losses = 0;
+		vX = 0;
+		vY =0;
 	}
 	
+	public int getvX() {
+		return vX;
+	}
+
+	public int getvY() {
+		return vY;
+	}
+
+	public void setvX(int vX) {
+		this.vX = vX;
+	}
+
+	public void setvY(int vY) {
+		this.vY = vY;
+	}
+
 	@Override
 	public void translate(int x, int y) {
 		super.translate(x, y);
-		weapon.setX(x);
-		weapon.setY(y);
+		weapon.translate(x, y);
+	}
+	
+	public void move() {
+		super.translate(vX, vY);
+		weapon.translate(vX, vY);
 	}
 	
 	@Override 
