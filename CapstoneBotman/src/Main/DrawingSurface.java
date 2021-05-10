@@ -46,8 +46,6 @@ public class DrawingSurface extends PApplet {
 		screens.add(new WinScreen(400, 600, this));
 		
 		// Show the main menu screen first
-		//activeScreen = screens.get(MAIN_SCREEN);
-		
 		activeScreen = screens.get(MAIN_SCREEN);
 	}
 	
@@ -103,6 +101,15 @@ public class DrawingSurface extends PApplet {
 	 */
 	public boolean isPressed(Integer code) {
 		return keys.contains(code);
+	}
+	
+	/**
+	 * Checks if a given mouse button is clicked (currently held down).
+	 * @param code The mouse button to check.
+	 * @return Whether the given mouse button is being held.
+	 */
+	public boolean isClicked(Integer code) {
+		return mousePressed && mouseButton == code;
 	}
 	
 	/**
