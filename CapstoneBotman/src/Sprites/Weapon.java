@@ -20,10 +20,13 @@ public class Weapon extends Sprite{
 	
 	public void draw(PApplet drawer, double angle) {
 		delay--;
-		drawer.rotate((float) angle);
 		this.angle = angle;
-		drawer.image(image, x, y, width, height);
-		drawer.rotate(0);
+		drawer.pushMatrix();
+		drawer.translate(x,y);
+		drawer.rotate((float) angle);
+		drawer.imageMode(drawer.CENTER);
+		drawer.image(image, width/2, height/2, width, height);
+		drawer.popMatrix();
 		
 	}
 	

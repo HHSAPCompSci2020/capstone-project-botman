@@ -23,15 +23,17 @@ public class Bullet extends Sprite{
 		this.damage = damage;
 		this.duration = duration;
 		this.currDuration = duration;
+		this.speed = INIT_SPEED;
 		angle = 0;
 	}
 	
-	public Bullet(int x, int y, int width, int height, PImage image , int damage, int duration) {
+	public Bullet(int x, int y, int width, int height, PImage image , int damage, int duration, double angle) {
 		super(x, y, width, height, image);
 		this.damage = damage;
 		this.duration = duration;
 		this.currDuration = duration;
-		angle = 0;
+		this.speed = INIT_SPEED;
+		this.angle = angle;
 	}
 	
 	public Bullet(int x, int y, int width, int height, PApplet drawer) {
@@ -61,14 +63,12 @@ public class Bullet extends Sprite{
 	}
 	
 	public void move() {
-		x += speed*Math.cos(angle);
-		y += speed*Math.sin(angle);
+		translate((int) (speed*Math.cos(angle)), (int) (speed*Math.sin(angle)));
 	}
 	
 	
 	public Bullet createBullet(double angle, int x, int y) {
-		this.angle = angle;
-		return new Bullet(x,y, width, height, image, damage, duration);
+		return new Bullet(x,y, width, height, image, damage, duration, angle);
 	}
 	
 	public void setDamage(int damage) {
