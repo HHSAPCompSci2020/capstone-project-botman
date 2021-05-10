@@ -8,8 +8,11 @@ public abstract class Player extends Sprite{
 	private int health;
 	private int wins, losses; 
 	private int vX, vY; 
+	private double angle;
 	private Weapon weapon; 
 	
+
+
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer, int health
 			, int cash) {
 		super(x, y, width, height, fileName, drawer);
@@ -18,6 +21,7 @@ public abstract class Player extends Sprite{
 		losses = 0;
 		vX = 0;
 		vY =0;
+		angle = 0;
 		
 	}
 	
@@ -30,6 +34,7 @@ public abstract class Player extends Sprite{
 		losses = 0;
 		vX = 0;
 		vY =0;
+		angle = 0;
 	}
 	
 	public int getvX() {
@@ -88,6 +93,14 @@ public abstract class Player extends Sprite{
 		this.cash += cashVal; 
 	}
 	
+	public double getAngle() {
+		return angle;
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+	
 	public void win() {
 		wins++;
 	}
@@ -136,7 +149,7 @@ public abstract class Player extends Sprite{
 		this.losses = losses;
 	}
 
-	public void draw(PApplet drawer, double angle) {
+	public void draw(PApplet drawer) {
 		super.draw(drawer);
 		weapon.draw(drawer, angle);
 	}
