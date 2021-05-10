@@ -6,6 +6,12 @@ import g4p_controls.GEvent;
 import g4p_controls.GLabel;
 import processing.core.PConstants;
 
+/**
+ * This is the main screen that is run at the beginning of the program, and is the first screen the user interacts with
+ * 
+ * @author Aayush Kumar
+ *
+ */
 public class MainScreen extends Screen {
 
 	/**
@@ -39,7 +45,7 @@ public class MainScreen extends Screen {
 	GLabel title;
 	
 	/**
-	 * Sets up the main screen
+	 * Sets up x and y to an initial value of 0 and stores the width, height, and surface locally
 	 * 
 	 * @param width Initial width of the screen
 	 * @param height Initial height of the screen

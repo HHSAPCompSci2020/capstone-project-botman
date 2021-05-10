@@ -6,14 +6,46 @@ import g4p_controls.GEvent;
 import g4p_controls.GLabel;
 import processing.core.PConstants;
 
+/**
+ * This is the instructions screen that is displayed when the instructions button is clicked from other screens in the game
+ * 
+ * @author Aayush Kumar
+ *
+ */
 public class InstructionScreen extends Screen{
 
-	private int x, y;
+	/**
+	 * X-coordinate of the top right of the screen
+	 */
+	private int x;
+	
+	/**
+	 * Y-coordinate of the top right of the screen
+	 */
+	private int y;
+	
+	/**
+	 * PApplet surface where the game is drawn
+	 */
 	private DrawingSurface surface;
 	
+	/**
+	 * Button that leads back to the main screen
+	 */
 	GButton backButton;
+	
+	/**
+	 * Label that does not do anything currently
+	 */
 	GLabel instructions;
 	
+	/**
+	 * Sets up x and y to an initial value of 0 and stores the width, height, and surface locally
+	 * 
+	 * @param width Initial width of the screen
+	 * @param height Initial height of the screen
+	 * @param surface PApplet where the screen is drawn
+	 */
 	public InstructionScreen(int width, int height, DrawingSurface surface) {
 		super(width, height);
 		this.surface = surface;
@@ -25,7 +57,7 @@ public class InstructionScreen extends Screen{
 	}
 	
 	/**
-	 * Sets up instructions button and play button
+	 * Sets up instructions button and back button
 	 */
 	public void setup() {
 		instructions = new GLabel(surface, 90, 100, 200, 50, "Instructions");
@@ -41,7 +73,7 @@ public class InstructionScreen extends Screen{
 	}
 	
 	/**
-	 * Draws the title and buttons on the screen
+	 * Draws the title, instructions, and buttons on the screen
 	 */
 	public void draw() {
 		surface.pushStyle();
