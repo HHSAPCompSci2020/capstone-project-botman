@@ -12,7 +12,7 @@ public class Weapon extends Sprite{
 	
 	public Weapon(int x, int y, int width, int height, PApplet drawer) {
 		super(x, y, width, height, FILE_IMAGE_NAME, drawer);
-		FIRING_DELAY = 30; 
+		FIRING_DELAY = 10; 
 		bullet = new Bullet(drawer);
 		angle = 0;
 		// TODO Auto-generated constructor stub
