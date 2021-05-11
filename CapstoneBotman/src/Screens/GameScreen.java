@@ -84,6 +84,11 @@ public class GameScreen extends Screen {
 		runner.move();
 		hunter.move();
 		
+		// Pause
+		if (surface.isPressed(KeyEvent.VK_P)) {
+			surface.switchScreen(DrawingSurface.PAUSE_SCREEN);
+		}
+		
 		// Runner controls
 		movePlayer(runner, KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D);
 		if (surface.isPressed(KeyEvent.VK_G))
