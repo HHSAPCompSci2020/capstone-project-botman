@@ -20,6 +20,7 @@ public class GameScreen extends Screen {
 	private static final int PUSHBACK_DAMAGE = 25;
 	private static final int RESPAWN_DELAY = 180;
 	private static final int NUM_WINS = 3;
+	private static final boolean USE_SHOP = false;
 	
 	private DrawingSurface surface;
 	
@@ -42,7 +43,6 @@ public class GameScreen extends Screen {
 		hunter = new Hunter(0, 0, 44, 44, surface);
 		obstacles = new ArrayList<Obstacle>();
 		bullets = new ArrayList<Bullet>();
-		resetRound();
 	}
 	
 	/**
@@ -173,14 +173,17 @@ public class GameScreen extends Screen {
 		else {
 			runner.setWins(runner.getWins() + 1);
 			hunter.setLosses(hunter.getLosses() + 1);
-			resetRound();
+			runner.changeCash(50);
+			prepareRound();
 		}
 		if (runner.getHealth() <= 0) {
 			hunter.setWins(hunter.getWins() + 1);
 			runner.setLosses(runner.getLosses() + 1);
-			resetRound();
+			hunter.changeCash(50);
+			prepareRound();
 		}
 		if (hunterAlive() && hunter.getHealth() <= 0) {
+			runner.changeCash(25);
 			hunterRespawn = RESPAWN_DELAY;
 		}
 	}
@@ -361,8 +364,8 @@ public class GameScreen extends Screen {
 			surface.text(String.format("%d VS %d", runner.getWins(), hunter.getWins()), 200, 230);
 			surface.text(String.format("Runner HP: %d", runner.getHealth()), 200, 260);
 			surface.text(String.format("Hunter HP: %d", hunter.getHealth()), 200, 290);
-			surface.text(String.format("Obstacle count: %d", obstacles.size()), 200, 320);
-			surface.text(String.format("Bullet count: %d", bullets.size()), 200, 350);
+			surface.text(String.format("Runner $: %d", runner.getCash()), 200, 320);
+			surface.text(String.format("Hunter $: %d", hunter.getCash()), 200, 350);
 		}
 		
 		// Draw all objects
@@ -406,15 +409,25 @@ public class GameScreen extends Screen {
 	}
 	
 	/**
-	 * Resets one round of the game.
-	 * Call this before starting a new round.
+	 * Prepares a new round of the game, and then switches to the shop menu.
+	 * Call this when starting a new round.
 	 */
-	public void resetRound() {
+	public void prepareRound() {
 		// Check for winner
 		if (runner.getWins() >= NUM_WINS || hunter.getWins() >= NUM_WINS) {
 			surface.switchScreen(DrawingSurface.WIN_SCREEN);
 			return;
 		}
+		runner.changeCash(100);
+		hunter.changeCash(100);
+		if (USE_SHOP)
+			surface.switchScreen(DrawingSurface.SHOP_SCREEN);
+	}
+	
+	/**
+	 * Begins a round. Automatically called by ShopScreen.
+	 */
+	public void beginRound() {
 		spawnRunner();
 		spawnHunter();
 		obstacles.clear();
@@ -425,15 +438,14 @@ public class GameScreen extends Screen {
 	}
 	
 	/**
-	 * Resets the entire game.
-	 * Call this when starting a new game.
+	 * Starts a new game (resets win counts).
 	 */
-	public void resetGame() {
+	public void startGame() {
 		runner.setLosses(0);
 		runner.setWins(0);
 		hunter.setLosses(0);
 		hunter.setWins(0);
-		resetRound();
+		prepareRound();
 	}
 	
 	/**
