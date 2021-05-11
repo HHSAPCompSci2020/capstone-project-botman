@@ -116,6 +116,11 @@ public class PauseScreen extends Screen {
 
 		// if play is clicked, switch to game screen
 		if (button == restart && event == GEvent.CLICKED) {
+			// gameScreen switch
+			Screen gameScreen = surface.getScreen(3);
+			if (gameScreen instanceof GameScreen) {
+				((GameScreen) gameScreen).resetGame();
+			}
 			
 			surface.switchScreen(3);
 		}
