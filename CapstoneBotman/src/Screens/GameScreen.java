@@ -1,6 +1,7 @@
 package Screens;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -14,6 +15,11 @@ public class GameScreen extends Screen {
 	
 	private static final double ROTATE_SPEED = 0.07;
 	private static final int MAX_SPEED = 5;
+	private static final int SCROLL_SPEED = 2;
+	private static final int PUSHBACK_SPEED = 20;
+	private static final int PUSHBACK_DAMAGE = 25;
+	private static final int RESPAWN_DELAY = 180;
+	private static final int NUM_WINS = 3;
 	
 	private DrawingSurface surface;
 	
@@ -22,7 +28,7 @@ public class GameScreen extends Screen {
 	public Goal goal;
 	private ArrayList<Obstacle> obstacles;
 	private ArrayList<Bullet> bullets;
-	private int timer;
+	private int timer, hunterRespawn;
 
 	public GameScreen(int width, int height, DrawingSurface surface) {
 		super(width, height);
@@ -43,54 +49,28 @@ public class GameScreen extends Screen {
 	 * Updates the game state. Automatically called by draw().
 	 */
 	public void update() {
-		// Setup hitboxes
-		Rectangle2D rRect = runner.getHitBox();
-		Ellipse2D.Double runnerHitbox = new Ellipse2D.Double(rRect.getX(), rRect.getY(), rRect.getWidth(), rRect.getHeight());
-		Rectangle2D hRect = hunter.getHitBox();
-		Ellipse2D.Double hunterHitbox = new Ellipse2D.Double(hRect.getX(), hRect.getY(), hRect.getWidth(), hRect.getHeight());
-		
-		// Obstacles
-		for (int i = 0; i < obstacles.size(); i++) {
-			Obstacle o = obstacles.get(i);
-			o.translate(0, 2);
+		// Screen scroll, update velocities, handle controls
+		updatePre();
+		// Add obstacles, check collisions, move players
+		updateMid();
+		// Handle game logic
+		updatePost();
+	}
+	
+	private void updatePre() {
+		// Screen scroll
+		runner.translate(0, SCROLL_SPEED);
+		hunter.translate(0, SCROLL_SPEED);
+		for (Obstacle o : obstacles) {
+			o.translate(0, SCROLL_SPEED);
 		}
-		
-		// Bullets
-		for (int i = 0; i < bullets.size(); i++) {
-			Bullet b = bullets.get(i);
-			boolean toRemove = false;
-			b.move();
-			if (!b.checkDuration())
-				toRemove = true;
-			
-			// Check intersection with players
-			// TODO: Bullets might be able to hit the player that launched them
-			if (runnerHitbox.intersects(b.getHitBox())) {
-				runner.changeHealth(-b.getDamage());
-				toRemove = true;
-			}
-			if (hunterHitbox.intersects(b.getHitBox())) {
-				hunter.changeHealth(-b.getDamage());
-				toRemove = true;
-			}
-			
-			if (toRemove) {
-				bullets.remove(i);
-				i--;
-			}
-		}
-		
-		// Players
-		runner.move();
-		hunter.move();
-		
-		// Pause
-		if (surface.isPressed(KeyEvent.VK_P)) {
-			surface.switchScreen(DrawingSurface.PAUSE_SCREEN);
+		for (Bullet b : bullets) {
+			b.translate(0, SCROLL_SPEED);
 		}
 		
 		// Runner controls
-		movePlayer(runner, KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D);
+		keepPlayerInBounds(runner);
+		controlPlayer(runner, KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D);
 		if (surface.isPressed(KeyEvent.VK_G))
 			runner.setAngle(runner.getAngle() - ROTATE_SPEED);
 		if (surface.isPressed(KeyEvent.VK_H))
@@ -102,18 +82,90 @@ public class GameScreen extends Screen {
 		}
 		
 		// Hunter controls
-		movePlayer(hunter, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT);
-		if (surface.isClicked(PConstants.LEFT)) {
-			Bullet bullet = hunter.fire();
-			if (bullet != null)
-				bullets.add(bullet);
+		if (hunterAlive()) {
+			keepPlayerInBounds(hunter);
+			controlPlayer(hunter, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT);
+			if (surface.isClicked(PConstants.LEFT)) {
+				Bullet bullet = hunter.fire();
+				if (bullet != null)
+					bullets.add(bullet);
+			}
+			// TODO: Aiming is slightly off center
+			Point mouseLoc = surface.getMouseLocation();
+			double dx = mouseLoc.x - hunter.getX();
+			double dy = mouseLoc.y - hunter.getY();
+			double angle = Math.atan2(dy, dx);
+			hunter.setAngle(angle);
+		} else {
+			if (hunterRespawn == 0)
+				spawnHunter();
+			hunterRespawn--;
 		}
-		// TODO: Aiming is slightly off center
-		Point mouseLoc = surface.getMouseLocation();
-		double dx = mouseLoc.x - hunter.getX();
-		double dy = mouseLoc.y - hunter.getY();
-		double angle = Math.atan2(dy, dx);
-		hunter.setAngle(angle);
+		
+		// Bullets
+		for (Bullet b : bullets) {
+			b.move();
+		}
+	}
+	
+	private void updateMid() {
+		// Add obstacles
+		if (timer % 50 == 0) {
+			obstacles.add(new Obstacle((int) (401 * Math.random()), -80, 120, 50, surface));
+		}
+		
+		// Setup hitboxes
+		Rectangle2D rRect = runner.getHitBox();
+		Ellipse2D.Double runnerHitbox = new Ellipse2D.Double(rRect.getX(), rRect.getY(), rRect.getWidth(), rRect.getHeight());
+		Rectangle2D hRect = hunter.getHitBox();
+		Ellipse2D.Double hunterHitbox = new Ellipse2D.Double(hRect.getX(), hRect.getY(), hRect.getWidth(), hRect.getHeight());
+		
+		// Move players while checking obstacle collisions
+		moveWithCollisionChecks(runner);
+		moveWithCollisionChecks(hunter);
+		
+		// Obstacle off screen
+		for (int i = 0; i < obstacles.size(); i++) {
+			Obstacle o = obstacles.get(i);
+			if (o.getHitBox().getMinY() >= HEIGHT) {
+				obstacles.remove(i);
+				i--;
+			}
+		}
+		
+		// Bullet off screen & collisions
+		for (int i = 0; i < bullets.size(); i++) {
+			Bullet b = bullets.get(i);
+			boolean toRemove = false;
+			if (!b.checkDuration())
+				toRemove = true;
+			
+			for (Obstacle o : obstacles)
+				if (b.getHitBox().intersects(o.getHitBox()))
+					toRemove = true;
+			
+			// Check intersection with players
+			// TODO: Bullets might be able to hit the player that launched them
+			if (runnerHitbox.intersects(b.getHitBox())) {
+				runner.changeHealth(-b.getDamage());
+				toRemove = true;
+			}
+			if (hunterAlive() && hunterHitbox.intersects(b.getHitBox())) {
+				hunter.changeHealth(-b.getDamage());
+				toRemove = true;
+			}
+			
+			if (toRemove) {
+				bullets.remove(i);
+				i--;
+			}
+		}
+	}
+	
+	private void updatePost() {
+		// Pause
+		if (surface.isPressed(KeyEvent.VK_P))
+			surface.switchScreen(DrawingSurface.PAUSE_SCREEN);
 		
 		// Game logic
 		if (timer > 0)
@@ -128,19 +180,20 @@ public class GameScreen extends Screen {
 			runner.setLosses(runner.getLosses() + 1);
 			resetRound();
 		}
-		if (hunter.getHealth() <= 0) {
-			
+		if (hunterAlive() && hunter.getHealth() <= 0) {
+			hunterRespawn = RESPAWN_DELAY;
 		}
 	}
 	
-	private void movePlayer(Player player, int up, int left, int down, int right) {
+	private void controlPlayer(Player player, int up, int left, int down, int right) {
+		// Move in x direction
 		boolean movedX = false;
 		if (surface.isPressed(left)) {
-			player.setvX(Math.max(player.getvX() - 1, -MAX_SPEED));
+			player.setvX(player.getvX() - 1);
 			movedX = true;
 		}
 		if (surface.isPressed(right)) {
-			player.setvX(Math.min(player.getvX() + 1, MAX_SPEED));
+			player.setvX(player.getvX() + 1);
 			movedX = true;
 		}
 		if (!movedX) {
@@ -150,13 +203,14 @@ public class GameScreen extends Screen {
 			player.setvX(currvX);
 		}
 		
+		// Move in y direction
 		boolean movedY = false;
 		if (surface.isPressed(up)) {
-			player.setvY(Math.max(player.getvY() - 1, -MAX_SPEED));
+			player.setvY(player.getvY() - 1);
 			movedY = true;
 		}
 		if (surface.isPressed(down)) {
-			player.setvY(Math.min(player.getvY() + 1, MAX_SPEED));
+			player.setvY(player.getvY() + 1);
 			movedY = true;
 		}
 		if (!movedY) {
@@ -165,6 +219,129 @@ public class GameScreen extends Screen {
 			else if (currvY > 0) currvY--;
 			player.setvY(currvY);
 		}
+		
+		// Constrain x and y speed
+		if (player.getvX() < -MAX_SPEED)
+			player.setvX(player.getvX() + 2);
+		else if (player.getvX() > MAX_SPEED)
+			player.setvX(player.getvX() - 2);
+		if (player.getvY() < -MAX_SPEED)
+			player.setvY(player.getvY() + 2);
+		else if (player.getvY() > MAX_SPEED)
+			player.setvY(player.getvY() - 2);
+	}
+	
+	private void keepPlayerInBounds(Player player) {
+		// Top border
+		if (player.getHitBox().getMaxY() <= 0) {
+			player.setvY(player.getvY() + PUSHBACK_SPEED);
+			player.changeHealth(-PUSHBACK_DAMAGE);
+		}
+		
+		// Bottom border
+		if (player.getHitBox().getMinY() >= HEIGHT) {
+			player.setvY(player.getvY() - PUSHBACK_SPEED);
+			player.changeHealth(-PUSHBACK_DAMAGE);
+		}
+		
+		// Left border
+		if (player.getHitBox().getMaxX() <= 0) {
+			player.setvX(player.getvX() + PUSHBACK_SPEED);
+			player.changeHealth(-PUSHBACK_DAMAGE);
+		}
+		
+		// Right border
+		if (player.getHitBox().getMinX() >= WIDTH) {
+			player.setvX(player.getvX() - PUSHBACK_SPEED);
+			player.changeHealth(-PUSHBACK_DAMAGE);
+		}
+	}
+	
+	private void moveWithCollisionChecks(Player player) {
+		Rectangle rect = player.getHitBox();
+		for (Obstacle o : obstacles) {
+			// TODO: Improve collisions to allow for getting out of corners
+			// Do this by attempting to translate a bit in the direction with least velocity
+			// Pre-move (allows for a bit of sliding)
+			// if (moveOutOfObstacle(player, o, 3)) continue;
+			
+			// X-axis
+			while (player.getvX() != 0) {
+				Ellipse2D.Double pHitbox = new Ellipse2D.Double(rect.getX() + player.getvX(), rect.getY(), rect.getWidth(), rect.getHeight());
+				if (pHitbox.intersects(o.getHitBox())) {
+					// Lower speed in x direction
+					if (player.getvX() > 0)
+						player.setvX(player.getvX() - 1);
+					else
+						player.setvX(player.getvX() + 1);
+				} else {
+					// No longer collides with this obstacle
+					break;
+				}
+			}
+			
+			// Y-axis
+			while (true) {
+				Ellipse2D.Double pHitbox = new Ellipse2D.Double(rect.getX(), rect.getY() + player.getvY(), rect.getWidth(), rect.getHeight());
+				if (pHitbox.intersects(o.getHitBox())) {
+					// Lower speed in y direction
+					if (player.getvY() > 0)
+						player.setvY(player.getvY() - 1);
+					else if (player.getvY() < 0)
+						player.setvY(player.getvY() + 1);
+					else {
+						// Stuck in an obstacle; find smallest movement out
+						moveOutOfObstacle(player, o, Math.min(player.getWidth(), player.getHeight()));
+						break;
+					}
+				} else {
+					// No longer collides with this obstacle
+					break;
+				}
+			}
+		}
+		
+		// Move with new velocity
+		player.move();
+	}
+	
+	/**
+	 * This should be used as a last resort (may cause very large jumps)!
+	 */
+	private boolean moveOutOfObstacle(Player player, Obstacle obstacle, int maxD) {
+		// Find smallest movement out
+		Rectangle rect = player.getHitBox();
+		rect.translate(player.getvX(), player.getvY());
+		Ellipse2D.Double pHitbox;
+		Rectangle oHitbox = obstacle.getHitBox();
+		for (int d = 0; d <= maxD; d++) {
+			// Move up
+			pHitbox = new Ellipse2D.Double(rect.getX(), rect.getY() - d, rect.getWidth(), rect.getHeight());
+			if (!pHitbox.intersects(oHitbox)) {
+				player.translate(0, -d);
+				return true;
+			}
+			// Move down
+			pHitbox = new Ellipse2D.Double(rect.getX(), rect.getY() + d, rect.getWidth(), rect.getHeight());
+			if (!pHitbox.intersects(oHitbox)) {
+				player.translate(0, d);
+				return true;
+			}
+			// Move left
+			pHitbox = new Ellipse2D.Double(rect.getX() - d, rect.getY(), rect.getWidth(), rect.getHeight());
+			if (!pHitbox.intersects(oHitbox)) {
+				player.translate(-d, 0);
+				return true;
+			}
+			// Move right
+			pHitbox = new Ellipse2D.Double(rect.getX() + d, rect.getY(), rect.getWidth(), rect.getHeight());
+			if (!pHitbox.intersects(oHitbox)) {
+				player.translate(d, 0);
+				return true;
+			}
+			d++;
+		}
+		return false;
 	}
 	
 	@Override
@@ -173,20 +350,25 @@ public class GameScreen extends Screen {
 		
 		// Pre drawing
 		surface.pushStyle();
-		surface.background(255, 200, 255);
+		surface.background(200, 200, 200);
 		surface.fill(0, 100, 0);
 		
-		// Timer
-		surface.textAlign(PConstants.CENTER, PConstants.CENTER);
-		surface.textSize(24);
-		surface.text(String.format("Timer: %.2f", timer / 60.0), 200, 200);
-		surface.text(String.format("%d VS %d", runner.getWins(), hunter.getWins()), 200, 230);
-		surface.text(String.format("Runner HP: %d", runner.getHealth()), 200, 260);
-		surface.text(String.format("Hunter HP: %d", hunter.getHealth()), 200, 290);
+		// Debug info
+		if (true) {
+			surface.textAlign(PConstants.CENTER, PConstants.CENTER);
+			surface.textSize(24);
+			surface.text(String.format("Timer: %.2f", timer / 60.0), 200, 200);
+			surface.text(String.format("%d VS %d", runner.getWins(), hunter.getWins()), 200, 230);
+			surface.text(String.format("Runner HP: %d", runner.getHealth()), 200, 260);
+			surface.text(String.format("Hunter HP: %d", hunter.getHealth()), 200, 290);
+			surface.text(String.format("Obstacle count: %d", obstacles.size()), 200, 320);
+			surface.text(String.format("Bullet count: %d", bullets.size()), 200, 350);
+		}
 		
 		// Draw all objects
 		runner.draw(surface);
-		hunter.draw(surface);
+		if (hunterAlive())
+			hunter.draw(surface);
 		for (Obstacle o : obstacles) {
 			o.draw(surface);
 		}
@@ -196,6 +378,10 @@ public class GameScreen extends Screen {
 		
 		// Post drawing
 		surface.popStyle();
+	}
+	
+	private boolean hunterAlive() {
+		return hunterRespawn < 0;
 	}
 	
 	private void spawnRunner() {
@@ -209,9 +395,10 @@ public class GameScreen extends Screen {
 	}
 	
 	private void spawnHunter() {
+		// TODO: Do not spawn hunter on top of obstacles or bullets
 		// Random x to avoid spawn camping
 		hunter.setX(50 + (int) (Math.random() * (WIDTH - 50)));
-		hunter.setY(500);
+		hunter.setY(400);
 		hunter.setvX(0);
 		hunter.setvY(0);
 		hunter.setAngle(-Math.PI / 2);
@@ -223,14 +410,18 @@ public class GameScreen extends Screen {
 	 * Call this before starting a new round.
 	 */
 	public void resetRound() {
+		// Check for winner
+		if (runner.getWins() >= NUM_WINS || hunter.getWins() >= NUM_WINS) {
+			surface.switchScreen(DrawingSurface.WIN_SCREEN);
+			return;
+		}
 		spawnRunner();
 		spawnHunter();
 		obstacles.clear();
 		bullets.clear();
 		// A round lasts 30 seconds
 		timer = 30 * 60;
-		// TODO: For testing
-		timer -= 1200;
+		hunterRespawn = -1;
 	}
 	
 	/**
