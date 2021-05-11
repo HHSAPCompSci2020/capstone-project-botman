@@ -122,7 +122,7 @@ public class PauseScreen extends Screen {
 				((GameScreen) gameScreen).startGame();
 			}
 			
-			surface.switchScreen(3);
+			//surface.switchScreen(3);
 		}
 
 		// if play is clicked, switch to game screen
