@@ -422,12 +422,15 @@ public class GameScreen extends Screen {
 		hunter.changeCash(100);
 		if (USE_SHOP)
 			surface.switchScreen(DrawingSurface.SHOP_SCREEN);
+		else
+			beginRound();
 	}
 	
 	/**
 	 * Begins a round. Automatically called by ShopScreen.
 	 */
 	public void beginRound() {
+		surface.switchScreen(DrawingSurface.GAME_SCREEN);
 		spawnRunner();
 		spawnHunter();
 		obstacles.clear();
