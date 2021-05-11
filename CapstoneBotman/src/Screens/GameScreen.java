@@ -20,7 +20,7 @@ public class GameScreen extends Screen {
 	private static final int PUSHBACK_DAMAGE = 25;
 	private static final int RESPAWN_DELAY = 180;
 	private static final int NUM_WINS = 3;
-	private static final boolean USE_SHOP = false;
+	private static final boolean USE_SHOP = true;
 	
 	private DrawingSurface surface;
 	
