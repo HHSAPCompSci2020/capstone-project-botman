@@ -6,9 +6,6 @@ import processing.core.PImage;
 public class Bullet extends Sprite{
 
 	public static final String FILE_IMAGE_NAME = "Bullet.png";
-	public static final int INIT_DURATION = 60;
-	public static final int INIT_DAMAGE = 20;
-	public static final int INIT_SPEED = 10;
 	public static final int WIDTH = 10;
 	public static final int HEIGHT = 10;
 	private int duration;
@@ -18,39 +15,24 @@ public class Bullet extends Sprite{
 	private double angle;
 	// update so it doesnt have to load image every time
 	
-	public Bullet(int x, int y, int width, int height, PApplet drawer, int damage, int duration) {
-		super(x, y, width, height, FILE_IMAGE_NAME, drawer);
-		this.damage = damage;
-		this.duration = duration;
-		this.currDuration = duration;
-		this.speed = INIT_SPEED;
-		angle = 0;
-	}
 	
-	public Bullet(int x, int y, int width, int height, PImage image , int damage, int duration, double angle) {
+	public Bullet(int x, int y, int width, int height, PImage image , int damage, 
+			int duration, double angle, int speed) {
 		super(x, y, width, height, image);
 		this.damage = damage;
 		this.duration = duration;
 		this.currDuration = duration;
-		this.speed = INIT_SPEED;
+		this.speed = speed;
 		this.angle = angle;
 	}
 	
-	public Bullet(int x, int y, int width, int height, PApplet drawer) {
-		super(x, y, width, height, FILE_IMAGE_NAME, drawer);
-		this.duration = INIT_DURATION;
-		this.currDuration = INIT_DURATION;
-		this.damage = INIT_DAMAGE;
-		this.speed = INIT_SPEED;
-		angle = 0;
-	}
 	
-	public Bullet(PApplet drawer) {
+	public Bullet(PApplet drawer, int duration, int damage, int speed) {
 		super(WIDTH, HEIGHT, FILE_IMAGE_NAME, drawer);
-		this.duration = INIT_DURATION;
-		this.currDuration = INIT_DURATION;
-		this.damage = INIT_DAMAGE;
-		this.speed = INIT_SPEED;
+		this.duration = duration;
+		this.currDuration = duration;
+		this.damage = damage;
+		this.speed = speed;
 		angle = 0;
 	}
 	
@@ -68,7 +50,7 @@ public class Bullet extends Sprite{
 	
 	
 	public Bullet createBullet(double angle, int x, int y) {
-		return new Bullet(x,y, width, height, image, damage, duration, angle);
+		return new Bullet(x,y, width, height, image, damage, duration, angle, speed);
 	}
 	
 	public void setDamage(int damage) {

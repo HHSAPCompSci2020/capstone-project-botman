@@ -5,18 +5,21 @@ import processing.core.PApplet;
 public abstract class Player extends Sprite{
 
 	private int cash;
+	private int maxHealth;
 	private int health;
 	private int wins, losses; 
 	private int vX, vY; 
 	private double angle;
 	private Weapon weapon; 
+	private Weapon[] weapons; 
 	
 
 
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer, int health
 			, int cash) {
 		super(x, y, width, height, fileName, drawer);
-		weapon = new Weapon(x, y, width/2, height/4, drawer);
+		initWeapons(drawer);
+		weapon = weapons[0];
 		wins = 0;
 		losses = 0;
 		vX = 0;
@@ -27,7 +30,8 @@ public abstract class Player extends Sprite{
 	
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer) {
 		super(x, y, width, height, fileName, drawer);
-		weapon = new Weapon(x, y, width/2, height/4, drawer);
+		initWeapons(drawer);
+		weapon = weapons[0];
 		cash = 0;
 		health = 0;
 		wins = 0;
@@ -37,20 +41,31 @@ public abstract class Player extends Sprite{
 		angle = 0;
 	}
 	
-	public int getvX() {
-		return vX;
+	private void initWeapons(PApplet drawer) {
+		weapons [0] = new Rifle(x, y, width, height/2, drawer);
+		weapons [1] = new SniperRifle(x, y, width, height/2, drawer);
+		weapons [2] = new Shotgun(x, y, width, height/2, drawer);
 	}
-
-	public int getvY() {
-		return vY;
+	
+	public void setToRifle() {
+		weapon = weapons[0];
 	}
-
-	public void setvX(int vX) {
-		this.vX = vX;
+	
+	public void setToSniper() {
+		weapon = weapons[1];
 	}
-
-	public void setvY(int vY) {
-		this.vY = vY;
+	
+	public void setToShotgun() {
+		weapon = weapons[2];
+	}
+	
+	public void draw(PApplet drawer) {
+		super.draw(drawer);
+		weapon.draw(drawer, angle);
+	}
+	
+	public Bullet fire() {
+		return weapon.fire();
 	}
 
 	@Override
@@ -93,6 +108,26 @@ public abstract class Player extends Sprite{
 		this.cash += cashVal; 
 	}
 	
+	public Weapon getWeapon() {
+		return weapon;
+	}
+	
+	public int getvX() {
+		return vX;
+	}
+
+	public int getvY() {
+		return vY;
+	}
+
+	public void setvX(int vX) {
+		this.vX = vX;
+	}
+
+	public void setvY(int vY) {
+		this.vY = vY;
+	}
+	
 	public double getAngle() {
 		return angle;
 	}
@@ -109,13 +144,6 @@ public abstract class Player extends Sprite{
 		losses++;
 	}
 	
-	public Weapon getWeapon() {
-		return weapon;
-	}
-
-	public void setWeapon(Weapon weapon) {
-		this.weapon = weapon;
-	}
 
 	public int getCash() {
 		return cash;
@@ -148,15 +176,15 @@ public abstract class Player extends Sprite{
 	public void setLosses(int losses) {
 		this.losses = losses;
 	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
+	}
 
-	public void draw(PApplet drawer) {
-		super.draw(drawer);
-		weapon.draw(drawer, angle);
+	public void setMaxHealth(int maxHealth) {
+		this.maxHealth = maxHealth;
 	}
 	
-	public Bullet fire() {
-		return weapon.fire();
-	}
 	
 	
 

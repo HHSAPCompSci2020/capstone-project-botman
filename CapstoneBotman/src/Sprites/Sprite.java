@@ -8,14 +8,26 @@ import processing.core.PImage;
 /**@author kennywu**/
 public abstract class Sprite {
 	
-	//x, y about the center
+	/**
+	 * Center x,y coordinates of sprite,
+	 * width and height of sprite,
+	 * and the image ofsprite
+	 */
 	protected int x;
 	protected int y;
 	protected int width;
 	protected int height; 
 	protected PImage image;
 	
-	
+	/**
+	 * Initializes sprite with x,y coordinates, width and height, and image
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 * @param fileName the image file name 
+	 * @param drawer PApplet drawer to load image
+	 */
 	public Sprite(int x, int y, int width, int height, String fileName, PApplet drawer) {
 		this.x = x;
 		this.y = y;
@@ -24,18 +36,42 @@ public abstract class Sprite {
 		this.image = drawer.loadImage(fileName);
 	}
 	
+	/**
+	 * Initializes sprite with x,y coordinates, width and height
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 */
 	public Sprite(int x, int y, int width, int height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 	}
+	
+	/**
+	 * Initializes sprite with width and height, and image
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 * @param fileName the image file name 
+	 * @param drawer PApplet drawer to load image
+	 */
 	public Sprite(int width, int height, String fileName, PApplet drawer) {
 		this.width = width;
 		this.height = height;
 		this.image = drawer.loadImage(fileName);
 	}
 	
+	/**
+	 * Initializes sprite with x,y coordinates, width and height, and image
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 * @param image Pimage image that has already been loaded with an image 
+	 * @pre PImage image has to have called loadImage() beforehand
+	 */
 	public Sprite(int x, int y, int width, int height, PImage image) {
 		this.x = x;
 		this.y = y;
@@ -44,11 +80,20 @@ public abstract class Sprite {
 		this.image = image;
 	}
 	
-	
+	/**
+	 * Initializes and loads the image
+	 * @param fileName the image file name 
+	 * @param drawer PApplet drawer to load image
+	 */
 	public void setImage(String fileName, PApplet drawer) {
 		this.image = drawer.loadImage(fileName);
 	}
 	
+	/**
+	 * Initializes and loads the image
+	 * @param image PImage that has already been loaded with an image
+	 * @pre PImage image has to have called loadImage() beforehand
+	 */
 	public void setImage(PImage image) {
 		this.image = image;
 	}
@@ -111,11 +156,18 @@ public abstract class Sprite {
 		this.y += y;
 	}
 	
-	
+	/**
+	 * returns the height
+	 * @return height
+	 */
 	public int getHeight() {
 		return height;
 	}
 	
+	/**
+	 * returns the width
+	 * @return width
+	 */
 	public int getWidth() {
 		return width; 
 	}
