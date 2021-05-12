@@ -15,7 +15,7 @@ public class Shotgun extends Weapon{
 	public Shotgun(int x, int y, int width, int height, PApplet drawer) {
 		super(x, y, width, height, INIT_MAX_DELAY, FILE_IMAGE_NAME, new Bullet(drawer, INIT_DURATION,
 				INIT_DAMAGE, INIT_SPEED), drawer);
-		bullets = 0;
+		bullets = 1;
 	}
 
 	@Override
