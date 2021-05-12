@@ -42,6 +42,7 @@ public abstract class Player extends Sprite{
 	}
 	
 	private void initWeapons(PApplet drawer) {
+		weapons = new Weapon[3];
 		weapons [0] = new Rifle(x, y, width, height/2, drawer);
 		weapons [1] = new SniperRifle(x, y, width, height/2, drawer);
 		weapons [2] = new Shotgun(x, y, width, height/2, drawer);
