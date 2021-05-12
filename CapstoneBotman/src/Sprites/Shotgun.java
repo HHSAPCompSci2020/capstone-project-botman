@@ -31,7 +31,7 @@ public class Shotgun extends Weapon{
 				return getBullet().createBullet(getAngle(),
 						(int)(x+width*Math.cos(getAngle())), (int)(y+width*Math.sin(getAngle())));
 			case 3:
-				bullets = 0;
+				bullets = 1;
 				resetDelay();
 				return getBullet().createBullet(getAngle()-BULLET_SPREAD,
 						(int)(x+width*Math.cos(getAngle())), (int)(y+width*Math.sin(getAngle())));
