@@ -276,11 +276,13 @@ public class ShopScreen extends Screen {
 			((GameScreen) gameScreen).getRunner().setCash(1000);
 
 			hCash = ((GameScreen) gameScreen).getHunter().getCash();
-			System.out.println("The hunter has $" + hCash + " to begin with");
+			
 
 			rCash = ((GameScreen) gameScreen).getRunner().getCash();
 
 			if (hShop) {
+				
+				System.out.println("The hunter has $" + hCash + " to begin with");
 
 				// rifle
 				if (button == rButton) {
@@ -290,6 +292,7 @@ public class ShopScreen extends Screen {
 					if (hCash >= 100 && gameScreen instanceof GameScreen) {
 						hCash -= 100;
 						// ((GameScreen) gameScreen).getHunter().setCash(hCash - 100);
+						((GameScreen) gameScreen).getRunner().setToRifle();
 						System.out.println("Hunter bought rifle");
 					}
 
@@ -300,6 +303,7 @@ public class ShopScreen extends Screen {
 					if (hCash >= 150 && gameScreen instanceof GameScreen) {
 						hCash -= 150;
 						// ((GameScreen) gameScreen).getHunter().setCash(hCash - 150);
+						((GameScreen) gameScreen).getRunner().setToSniper();
 						System.out.println("Hunter bought sniper");
 					}
 
@@ -311,6 +315,7 @@ public class ShopScreen extends Screen {
 					if (hCash >= 75 && gameScreen instanceof GameScreen) {
 						hCash -= 75;
 						// ((GameScreen) gameScreen).getHunter().setCash(hCash - 75);
+						((GameScreen) gameScreen).getRunner().setToShotgun();
 						System.out.println("Hunter bought shotgun");
 					}
 
@@ -346,6 +351,8 @@ public class ShopScreen extends Screen {
 
 				// Screen gameScreen = surface.getScreen(surface.GAME_SCREEN);
 
+				System.out.println("The runner has $" + hCash + " to begin with");
+				
 				// rifle
 				if (button == rButton) {
 					RunnerWeapon = rifle;
@@ -353,6 +360,7 @@ public class ShopScreen extends Screen {
 					if (rCash >= 100 && gameScreen instanceof GameScreen) {
 						rCash -= 100;
 						((GameScreen) gameScreen).getRunner().setCash(rCash - 100);
+						((GameScreen) gameScreen).getRunner().setToRifle();
 						System.out.println("Runner bought rifle");
 					}
 
@@ -364,6 +372,7 @@ public class ShopScreen extends Screen {
 					if (rCash >= 150 && gameScreen instanceof GameScreen) {
 						rCash -= 150;
 						((GameScreen) gameScreen).getRunner().setCash(rCash - 150);
+						((GameScreen) gameScreen).getRunner().setToSniper();
 						System.out.println("Runner bought sniper");
 					}
 
@@ -375,10 +384,14 @@ public class ShopScreen extends Screen {
 					if (rCash >= 75 && gameScreen instanceof GameScreen) {
 						rCash -= 75;
 						((GameScreen) gameScreen).getRunner().setCash(rCash - 75);
+						((GameScreen) gameScreen).getRunner().setToShotgun();
+
 						System.out.println("Runner bought shotgun");
 					}
 
 					// half amror
+					
+					// USELESS
 				} else if (button == halfArmor) {
 
 					// hunterShield = 25;
@@ -436,8 +449,8 @@ public class ShopScreen extends Screen {
 
 					if (hCash >= 25 && gameScreen instanceof GameScreen && hunterShield == 0) {
 						hCash -= 25;
-						((GameScreen) gameScreen).getRunner().setCash(hCash - 25);
-						//((GameScreen) gameScreen).get
+						((GameScreen) gameScreen).getHunter().setCash(hCash - 25);
+						((GameScreen) gameScreen).getHunter().changeHealth(((GameScreen) gameScreen).getHunter().getHealth() + 25);
 						System.out.println("Hunter bought half armor");
 					}
 
@@ -450,7 +463,8 @@ public class ShopScreen extends Screen {
 
 					if (hCash >= 50 && gameScreen instanceof GameScreen && hunterShield == 0) {
 						hCash -= 50;
-						((GameScreen) gameScreen).getRunner().setCash(hCash - 50);
+						((GameScreen) gameScreen).getHunter().setCash(hCash - 50);
+						((GameScreen) gameScreen).getHunter().changeHealth(((GameScreen) gameScreen).getHunter().getHealth() + 50);
 						System.out.println("Hunter bought full armor");
 					}
 
@@ -478,6 +492,7 @@ public class ShopScreen extends Screen {
 						rCash -= 25;
 						System.out.println(rCash);
 						((GameScreen) gameScreen).getRunner().setCash(rCash);
+						((GameScreen) gameScreen).getRunner().changeHealth(((GameScreen) gameScreen).getRunner().getHealth() + 25);
 						System.out.println("Runner bought half armor");
 					}
 
@@ -492,6 +507,8 @@ public class ShopScreen extends Screen {
 						rCash += 100;
 						rCash -= 50;
 						((GameScreen) gameScreen).getRunner().setCash(rCash);
+						((GameScreen) gameScreen).getRunner().changeHealth(((GameScreen) gameScreen).getRunner().getHealth() + 25);
+
 						System.out.println("Runner bought full armor");
 					}
 
