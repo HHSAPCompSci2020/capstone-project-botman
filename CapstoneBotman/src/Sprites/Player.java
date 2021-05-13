@@ -14,7 +14,17 @@ public abstract class Player extends Sprite{
 	private Weapon[] weapons; 
 	
 
-
+	/**
+	 * Initializes a new Player 
+	 * @param x center x coordinate of player
+	 * @param y center y coordinate of player
+	 * @param width width of player
+	 * @param height height of player
+	 * @param fileName the file name for the image
+	 * @param drawer PApplet drawer to load image
+	 * @param health health of player
+	 * @param cash cash of player
+	 */
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer, int health
 			, int cash) {
 		super(x, y, width, height, fileName, drawer);
@@ -27,7 +37,15 @@ public abstract class Player extends Sprite{
 		angle = 0;
 		
 	}
-	
+	/**
+	 * Initializes a new Player 
+	 * @param x center x coordinate of player
+	 * @param y center y coordinate of player
+	 * @param width width of player
+	 * @param height height of player
+	 * @param fileName the file name for the image
+	 * @param drawer PApplet drawer to load image
+	 */
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer) {
 		super(x, y, width, height, fileName, drawer);
 		initWeapons(drawer);
@@ -48,23 +66,33 @@ public abstract class Player extends Sprite{
 		weapons [2] = new Shotgun(x, y, width, height/2, drawer);
 	}
 	
+	/**
+	 * Switches the weapon player has to the Rifle object
+	 */
 	public void setToRifle() {
 		weapon = weapons[0];
 	}
-	
+	/**
+	 * Switches the weapon player has to the SniperRifle object
+	 */
 	public void setToSniper() {
 		weapon = weapons[1];
 	}
-	
+	/**
+	 * Switches the weapon player has to the Shotgun object
+	 */
 	public void setToShotgun() {
 		weapon = weapons[2];
 	}
-	
+	@Override
 	public void draw(PApplet drawer) {
 		super.draw(drawer);
 		weapon.draw(drawer, angle);
 	}
-	
+	/**
+	 * Fire or creates a new bullet
+	 * @return new Bullet object
+	 */
 	public Bullet fire() {
 		return weapon.fire();
 	}
@@ -74,7 +102,9 @@ public abstract class Player extends Sprite{
 		super.translate(x, y);
 		weapon.translate(x, y);
 	}
-	
+	/**
+	 * translate the player according to its velocity
+	 */
 	public void move() {
 		super.translate(vX, vY);
 		weapon.translate(vX, vY);
@@ -108,80 +138,136 @@ public abstract class Player extends Sprite{
 	public void changeCash(int cashVal) {
 		this.cash += cashVal; 
 	}
-	
+	/**
+	 * Returns the weapon object Player holds
+	 * @return weapon 
+	 */
 	public Weapon getWeapon() {
 		return weapon;
 	}
-	
+	/**
+	 * The x velocity of player
+	 * @return x velocity
+	 */
 	public int getvX() {
 		return vX;
 	}
-
+	/**
+	 * The y velocity of player
+	 * @return y velocity
+	 */
 	public int getvY() {
 		return vY;
 	}
-
+	/**
+	 * Sets a new x velocity of player
+	 * @param vX new x velocity
+	 */
 	public void setvX(int vX) {
 		this.vX = vX;
 	}
-
+	/**
+	 * Sets a new y velocity of player
+	 * @param vY new y velocity
+	 */
 	public void setvY(int vY) {
 		this.vY = vY;
 	}
-	
+	/**
+	 * Return the angle of where player faces
+	 * @return angle of player
+	 */
 	public double getAngle() {
 		return angle;
 	}
-
+	/**
+	 * Sets a new angle for player to face
+	 * @param angle new angle for player
+	 */
 	public void setAngle(double angle) {
 		this.angle = angle;
 	}
 	
+	/**
+	 * Increment the wins
+	 */
 	public void win() {
 		wins++;
 	}
-	
+	/**
+	 * Increment the losses
+	 */
 	public void loss() {
 		losses++;
 	}
 	
-
+	/**
+	 * Returns the amount of cash on player
+	 * @return cash of player
+	 */
 	public int getCash() {
 		return cash;
 	}
-
+	/**
+	 * Returns the health of player
+	 * @return health of player
+	 */
 	public int getHealth() {
 		return health;
 	}
-
+	/**
+	 * Returns number of wins
+	 * @return number of wins
+	 */
 	public int getWins() {
 		return wins;
 	}
-
+	/**
+	 * Returns number of losses
+	 * @return number of losses
+	 */
 	public int getLosses() {
 		return losses;
 	}
-
+	/**
+	 * Sets a new cash amount for player
+	 * @param cash new cash amount
+	 */
 	public void setCash(int cash) {
 		this.cash = cash;
 	}
-
+	/**
+	 * Sets a new health for player
+	 * @param health new health for player
+	 */
 	public void setHealth(int health) {
 		this.health = health;
 	}
-
+	/**
+	 * Sets a new number of wins for player
+	 * @param wins new number of wins
+	 */
 	public void setWins(int wins) {
 		this.wins = wins;
 	}
-
+	/**
+	 * Sets a new number of losses for player
+	 * @param wins new number of losses
+	 */
 	public void setLosses(int losses) {
 		this.losses = losses;
 	}
-	
+	/**
+	 * Returns the maximum amount of health the player has
+	 * @return maximum amount of health the player has
+	 */
 	public int getMaxHealth() {
 		return maxHealth;
 	}
-
+	/**
+	 * Sets a new max health for the player
+	 * @param maxHealth new maximum health of player
+	 */
 	public void setMaxHealth(int maxHealth) {
 		this.maxHealth = maxHealth;
 	}

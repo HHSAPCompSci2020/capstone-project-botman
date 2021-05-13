@@ -3,7 +3,6 @@ package Screens;
 import java.util.ArrayList;
 
 import Main.DrawingSurface;
-import Main.Item;
 import Sprites.Rifle;
 import Sprites.Shotgun;
 import Sprites.SniperRifle;
