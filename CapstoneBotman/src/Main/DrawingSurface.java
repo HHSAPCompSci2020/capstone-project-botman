@@ -23,7 +23,7 @@ public class DrawingSurface extends PApplet {
 	public static final int PAUSE_SCREEN = 4;
 	public static final int WIN_SCREEN = 5;
 	
-	public float ratioX, ratioY;
+	private float ratioX, ratioY;
 	
 	private ArrayList<Integer> keys;
 	
@@ -46,7 +46,7 @@ public class DrawingSurface extends PApplet {
 		screens.add(new WinScreen(400, 600, this));
 		
 		// Show the main menu screen first
-		activeScreen = screens.get(SHOP_SCREEN);
+		activeScreen = screens.get(MAIN_SCREEN);
 	}
 	
 	/**

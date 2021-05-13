@@ -3,39 +3,56 @@ package Screens;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import Main.DrawingSurface;
 import Sprites.*;
+import jay.jaysound.*;
 import processing.core.PConstants;
 
-public class GameScreen extends Screen {
+/**
+ * 
+ * The GameScreen class combines all the Sprites together to run the actual game.
+ * @author Kyle Fu
+ *
+ */
+public class GameScreen extends Screen implements JayLayerListener {
 	
 	private static final double ROTATE_SPEED = 0.07;
+	private static final int ROUND_DURATION = 30;
 	private static final int MAX_SPEED = 5;
 	private static final int SCROLL_SPEED = 2;
 	private static final int PUSHBACK_SPEED = 20;
 	private static final int PUSHBACK_DAMAGE = 25;
 	private static final int RESPAWN_DELAY = 180;
 	private static final int NUM_WINS = 3;
-	private static final boolean USE_SHOP = true;
 	
 	private DrawingSurface surface;
+	private JayLayer music;
 	
 	private Runner runner;
 	private Hunter hunter;
-	public Goal goal;
 	private ArrayList<Obstacle> obstacles;
 	private ArrayList<Bullet> bullets;
 	private int timer, hunterRespawn;
-
+	
+	/**
+	 * Constructs a GameScreen.
+	 * @param width The screen width
+	 * @param height The screen height
+	 * @param surface The DrawingSurface containing this screen
+	 */
 	public GameScreen(int width, int height, DrawingSurface surface) {
 		super(width, height);
 		this.surface = surface;
 	}
 	
+	/**
+	 * Sets up the screen. Do not call this method manually.
+	 */
 	@Override
 	public void setup() {
 		super.setup();
@@ -43,6 +60,13 @@ public class GameScreen extends Screen {
 		hunter = new Hunter(0, 0, 44, 44, surface);
 		obstacles = new ArrayList<Obstacle>();
 		bullets = new ArrayList<Bullet>();
+		
+		music = new JayLayer("data/", "data/", false);
+		music.addPlayList();
+		music.addSong(0, "musicKahoot1.mp3");
+		music.addPlayList();
+		music.addSong(1, "musicKahoot2.mp3");
+		music.addJayLayerListener(this);
 	}
 	
 	/**
@@ -76,9 +100,14 @@ public class GameScreen extends Screen {
 		if (surface.isPressed(KeyEvent.VK_H))
 			runner.setAngle(runner.getAngle() + ROTATE_SPEED);
 		if (surface.isPressed(KeyEvent.VK_SPACE)) {
-			Bullet bullet = runner.fire();
-			if (bullet != null)
+			boolean fired = false;
+			while (runner.getWeapon().getCurrDelay() <= 0) {
+				Bullet bullet = runner.fire();
 				bullets.add(bullet);
+				fired = true;
+			}
+			if (fired)
+				playSoundEffect("vandalTap.mp3");
 		}
 		
 		// Hunter controls
@@ -86,11 +115,16 @@ public class GameScreen extends Screen {
 			keepPlayerInBounds(hunter);
 			controlPlayer(hunter, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT);
 			if (surface.isClicked(PConstants.LEFT)) {
-				Bullet bullet = hunter.fire();
-				if (bullet != null)
+				boolean fired = false;
+				while (hunter.getWeapon().getCurrDelay() <= 0) {
+					Bullet bullet = hunter.fire();
 					bullets.add(bullet);
+					fired = true;
+				}
+				if (fired)
+					playSoundEffect("vandalTap.mp3");
 			}
-			// TODO: Aiming is slightly off center
+			// TODO: Aiming is very slightly off center
 			Point mouseLoc = surface.getMouseLocation();
 			double dx = mouseLoc.x - hunter.getX();
 			double dy = mouseLoc.y - hunter.getY();
@@ -109,16 +143,11 @@ public class GameScreen extends Screen {
 	}
 	
 	private void updateMid() {
+		// TODO: Make obstacle generation more complex
 		// Add obstacles
 		if (timer % 50 == 0) {
 			obstacles.add(new Obstacle((int) (401 * Math.random()), -80, 120, 50, surface));
 		}
-		
-		// Setup hitboxes
-		Rectangle2D rRect = runner.getHitBox();
-		Ellipse2D.Double runnerHitbox = new Ellipse2D.Double(rRect.getX(), rRect.getY(), rRect.getWidth(), rRect.getHeight());
-		Rectangle2D hRect = hunter.getHitBox();
-		Ellipse2D.Double hunterHitbox = new Ellipse2D.Double(hRect.getX(), hRect.getY(), hRect.getWidth(), hRect.getHeight());
 		
 		// Move players while checking obstacle collisions
 		moveWithCollisionChecks(runner);
@@ -132,6 +161,13 @@ public class GameScreen extends Screen {
 				i--;
 			}
 		}
+		
+		// Setup hitboxes
+		Rectangle2D rRect = runner.getHitBox();
+		Ellipse2D.Double runnerHitbox = new Ellipse2D.Double(rRect.getX(), rRect.getY(), rRect.getWidth(), rRect.getHeight());
+		Rectangle2D hRect = hunter.getHitBox();
+		Ellipse2D.Double hunterHitbox = new Ellipse2D.Double(hRect.getX(), hRect.getY(), hRect.getWidth(), hRect.getHeight());
+		
 		
 		// Bullet off screen & collisions
 		for (int i = 0; i < bullets.size(); i++) {
@@ -147,7 +183,7 @@ public class GameScreen extends Screen {
 			// Check intersection with players
 			// TODO: Bullets might be able to hit the player that launched them
 			if (runnerHitbox.intersects(b.getHitBox())) {
-				runner.changeHealth(-b.getDamage());
+				runner.changeHealth(-b.getDamage() / 3);
 				toRemove = true;
 			}
 			if (hunterAlive() && hunterHitbox.intersects(b.getHitBox())) {
@@ -160,29 +196,29 @@ public class GameScreen extends Screen {
 				i--;
 			}
 		}
+		
+		// Player-to-player collision
+		Area areaIntersect = new Area(runnerHitbox);
+		areaIntersect.intersect(new Area(hunterHitbox));
+		if (hunterAlive() && !areaIntersect.isEmpty()) {
+			runner.changeHealth(-hunter.getHealth() / 2);
+			hunter.setHealth(0);
+		}
 	}
 	
 	private void updatePost() {
 		// Pause
-		if (surface.isPressed(KeyEvent.VK_P))
+		if (surface.isPressed(KeyEvent.VK_P)) {
+			// TODO: Find a way to pause and resume the song
 			surface.switchScreen(DrawingSurface.PAUSE_SCREEN);
+		}
 		
 		// Game logic
-		if (timer > 0)
-			timer--;
-		else {
-			runner.setWins(runner.getWins() + 1);
-			hunter.setLosses(hunter.getLosses() + 1);
-			runner.changeCash(50);
-			prepareRound();
-		}
-		if (runner.getHealth() <= 0) {
-			hunter.setWins(hunter.getWins() + 1);
-			runner.setLosses(runner.getLosses() + 1);
-			hunter.changeCash(50);
-			prepareRound();
-		}
+		timer--;
+		if (timer <= 0 || runner.getHealth() <= 0)
+			endRound();
 		if (hunterAlive() && hunter.getHealth() <= 0) {
+			playSoundEffect("boom.mp3");
 			runner.changeCash(25);
 			hunterRespawn = RESPAWN_DELAY;
 		}
@@ -347,6 +383,9 @@ public class GameScreen extends Screen {
 		return false;
 	}
 	
+	/**
+	 * Updates and draws the GameScreen. Automatically called once per frame.
+	 */
 	@Override
 	public void draw() {
 		update();
@@ -361,7 +400,7 @@ public class GameScreen extends Screen {
 			surface.textAlign(PConstants.CENTER, PConstants.CENTER);
 			surface.textSize(24);
 			surface.text(String.format("Timer: %.2f", timer / 60.0), 200, 200);
-			surface.text(String.format("%d VS %d", runner.getWins(), hunter.getWins()), 200, 230);
+			surface.text(String.format("R %d VS %d H", runner.getWins(), hunter.getWins()), 200, 230);
 			surface.text(String.format("Runner HP: %d", runner.getHealth()), 200, 260);
 			surface.text(String.format("Hunter HP: %d", hunter.getHealth()), 200, 290);
 			surface.text(String.format("Runner $: %d", runner.getCash()), 200, 320);
@@ -389,41 +428,39 @@ public class GameScreen extends Screen {
 	
 	private void spawnRunner() {
 		// Random x to avoid spawn camping
-		runner.setX(50 + (int) (Math.random() * (WIDTH - 50)));
+		runner.setX(50 + (int) ((WIDTH - 49) * Math.random()));
 		runner.setY(100);
 		runner.setvX(0);
 		runner.setvY(0);
 		runner.setAngle(Math.PI / 2);
-		runner.setHealth(100);
+		runner.setHealth(runner.getMaxHealth());
 	}
 	
 	private void spawnHunter() {
 		// TODO: Do not spawn hunter on top of obstacles or bullets
 		// Random x to avoid spawn camping
-		hunter.setX(50 + (int) (Math.random() * (WIDTH - 50)));
+		hunter.setX(25 + (int) (Math.random() * (WIDTH - 50)));
 		hunter.setY(400);
 		hunter.setvX(0);
 		hunter.setvY(0);
 		hunter.setAngle(-Math.PI / 2);
-		hunter.setHealth(100);
+		hunter.setHealth(hunter.getMaxHealth());
 	}
 	
 	/**
 	 * Prepares a new round of the game, and then switches to the shop menu.
 	 * Call this when starting a new round.
+	 * @postcondition The currently active screen will be ShopScreen.
 	 */
 	public void prepareRound() {
-		// Check for winner
-		if (runner.getWins() >= NUM_WINS || hunter.getWins() >= NUM_WINS) {
-			surface.switchScreen(DrawingSurface.WIN_SCREEN);
-			return;
-		}
 		runner.changeCash(100);
 		hunter.changeCash(100);
-		if (USE_SHOP)
-			surface.switchScreen(DrawingSurface.SHOP_SCREEN);
-		else
-			beginRound();
+		// Reset some stats
+		runner.setMaxHealth(100);
+		hunter.setMaxHealth(100);
+		runner.setToRifle();
+		hunter.setToRifle();
+		surface.switchScreen(DrawingSurface.SHOP_SCREEN);
 	}
 	
 	/**
@@ -435,9 +472,49 @@ public class GameScreen extends Screen {
 		spawnHunter();
 		obstacles.clear();
 		bullets.clear();
-		// A round lasts 30 seconds
-		timer = 30 * 60;
+		timer = ROUND_DURATION * 60;
 		hunterRespawn = -1;
+		music.changePlayList((int) (2 * Math.random()));
+		music.nextSong();
+	}
+	
+	/**
+	 * Ends a round, giving a point to the winner.
+	 * @precondition One of the win conditions must be met.
+	 */
+	public void endRound() {
+		if (timer <= 0) {
+			playSoundEffect("kahootGong.mp3");
+			runner.setWins(runner.getWins() + 1);
+			hunter.setLosses(hunter.getLosses() + 1);
+			runner.changeCash(50);
+		} else if (runner.getHealth() <= 0) {
+			playSoundEffect("boom.mp3");
+			hunter.setWins(hunter.getWins() + 1);
+			runner.setLosses(runner.getLosses() + 1);
+			hunter.changeCash(50);
+		} else {
+			System.err.println("Warning: endRound() called with no winner!");
+			System.err.printf("Timer %d, Runner health %d\n", timer, runner.getHealth());
+		}
+		// End music
+		music.stopSong();
+		// Check for winner
+		if (runner.getWins() >= NUM_WINS || hunter.getWins() >= NUM_WINS) {
+			surface.switchScreen(DrawingSurface.WIN_SCREEN);
+			return;
+		}
+		// Swap stats
+		int temp = runner.getWins();
+		runner.setWins(hunter.getWins());
+		hunter.setWins(temp);
+		temp = runner.getLosses();
+		runner.setLosses(hunter.getLosses());
+		hunter.setLosses(temp);
+		temp = runner.getCash();
+		runner.setCash(hunter.getCash());
+		hunter.setCash(temp);
+		prepareRound();
 	}
 	
 	/**
@@ -446,13 +523,15 @@ public class GameScreen extends Screen {
 	public void startGame() {
 		runner.setLosses(0);
 		runner.setWins(0);
+		runner.setCash(0);
 		hunter.setLosses(0);
 		hunter.setWins(0);
+		hunter.setCash(0);
 		prepareRound();
 	}
 	
 	/**
-	 * Gets the Runner object.
+	 * Gets the current Runner.
 	 * @return The runner.
 	 */
 	public Runner getRunner() {
@@ -460,11 +539,61 @@ public class GameScreen extends Screen {
 	}
 	
 	/**
-	 * Gets the Hunter object.
+	 * Gets the current Hunter.
 	 * @return The hunter.
 	 */
 	public Hunter getHunter() {
 		return hunter;
+	}
+	
+	/**
+	 * Gets the current value of the game timer (in frames)
+	 * @return The value of the game timer.
+	 */
+	public int getTimer() {
+		return timer;
+	}
+	
+	/**
+	 * Plays the given sound effect (should be a .mp3 file found in the data folder).
+	 * @param effect The effect to play.
+	 */
+	public void playSoundEffect(String effect) {
+		JayLayer sound = new JayLayer("data/", "data/", false);
+		sound.addSoundEffect(effect);
+		sound.playSoundEffect(0);
+	}
+	
+	/**
+	 * Called when music starts playing.
+	 */
+	@Override
+	public void musicStarted() {
+		
+	}
+	
+	/**
+	 * Called when music stops playing.
+	 */
+	@Override
+	public void musicStopped() {
+		
+	}
+	
+	/**
+	 * Called when a playlist ends.
+	 */
+	@Override
+	public void playlistEnded() {
+		
+	}
+	
+	/**
+	 * Called when a song ends.
+	 */
+	@Override
+	public void songEnded() {
+		
 	}
 	
 }
