@@ -297,6 +297,7 @@ public class ShopScreen extends Screen {
 			shButton.setVisible(false);
 			halfArmor.setVisible(false);
 			fullArmor.setVisible(false);
+			hShop = true;
 			nextVisible = true;
 		}
 
