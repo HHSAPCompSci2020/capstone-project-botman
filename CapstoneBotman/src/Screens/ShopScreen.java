@@ -277,6 +277,9 @@ public class ShopScreen extends Screen {
 
 		Runner run = ((GameScreen) gameScreen).getRunner();
 		Hunter hunt = ((GameScreen) gameScreen).getHunter();
+		
+		//hunt.setCash(1000);
+		//run.setCash(1000);
 
 		// exit button
 		if (button == exit && event == GEvent.CLICKED) {
@@ -313,8 +316,7 @@ public class ShopScreen extends Screen {
 
 			// Screen gameScreen = surface.getScreen(surface.GAME_SCREEN);
 
-			hunt.setCash(1000);
-			run.setCash(1000);
+			
 
 			hCash = hunt.getCash();
 
@@ -492,7 +494,7 @@ public class ShopScreen extends Screen {
 					if (hCash >= 25 && gameScreen instanceof GameScreen && hunterShield == 0) {
 						hCash -= 25;
 						hunt.setCash(hCash - 25);
-						hunt.setMaxHealth(hunt.getHealth() + 25);
+						hunt.setMaxHealth(125);
 						System.out.println("Hunter bought half armor ($25)");
 					}
 
@@ -506,7 +508,7 @@ public class ShopScreen extends Screen {
 					if (hCash >= 50 && gameScreen instanceof GameScreen && hunterShield == 0) {
 						hCash -= 50;
 						hunt.setCash(hCash - 50);
-						hunt.setMaxHealth(hunt.getHealth() + 50);
+						hunt.setMaxHealth(150);
 						System.out.println("Hunter bought full armor ($50)");
 					}
 
@@ -534,7 +536,7 @@ public class ShopScreen extends Screen {
 						rCash -= 25;
 						System.out.println(rCash);
 						run.setCash(rCash - 25);
-						run.setMaxHealth(run.getHealth() + 25);
+						run.setMaxHealth(125);
 						System.out.println("Runner bought half armor ($25)");
 					}
 
@@ -549,7 +551,7 @@ public class ShopScreen extends Screen {
 						// rCash += 100;
 						rCash -= 50;
 						run.setCash(rCash - 50);
-						run.setMaxHealth(run.getHealth() + 50);
+						run.setMaxHealth(150);
 
 						System.out.println("Runner bought full armor ($50)");
 					}
