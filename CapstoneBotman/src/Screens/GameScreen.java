@@ -453,8 +453,8 @@ public class GameScreen extends Screen implements JayLayerListener {
 	 * @postcondition The currently active screen will be ShopScreen.
 	 */
 	public void prepareRound() {
-		runner.changeCash(100);
-		hunter.changeCash(100);
+		runner.changeCash(500);
+		hunter.changeCash(500);
 		// Reset some stats
 		runner.setMaxHealth(100);
 		hunter.setMaxHealth(100);
