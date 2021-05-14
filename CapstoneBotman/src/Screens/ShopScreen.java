@@ -150,8 +150,8 @@ public class ShopScreen extends Screen {
 		hunterShield = 0;
 		runnerShield = 0;
 
-		hCash = 1000;
-		rCash = 1000;
+		//hCash = 1000;
+		//rCash = 1000;
 
 		x = 0;
 		y = 0;
@@ -260,9 +260,9 @@ public class ShopScreen extends Screen {
 		surface.textAlign(PConstants.CENTER, PConstants.CENTER);
 		surface.textSize(35);
 		if (hShop)
-			surface.text("Hunter Shop", 200, 50);
+			surface.text("Hunter Shop: $" + hCash, 200, 50);
 		else {
-			surface.text("Runner Shop", 200, 50);
+			surface.text("Runner Shop: $" + rCash, 200, 50);
 		}
 	}
 
