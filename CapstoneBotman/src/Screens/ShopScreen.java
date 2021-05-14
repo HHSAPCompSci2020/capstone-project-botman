@@ -299,6 +299,7 @@ public class ShopScreen extends Screen {
 			fullArmor.setVisible(false);
 			hShop = true;
 			nextVisible = true;
+			runnerShield = 0;
 		}
 
 		// next button
@@ -309,6 +310,7 @@ public class ShopScreen extends Screen {
 			// removes buttons
 			exit.setVisible(true);
 			nextVisible = false;
+			hunterShield = 0;
 		}
 
 		if ((button == rButton || button == sButton || button == shButton) && event == GEvent.CLICKED) {
