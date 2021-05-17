@@ -10,7 +10,7 @@ public class Shotgun extends Weapon{
 	
 	private static final String FILE_IMAGE_NAME = "Shotgun.png";
 	private static final int INIT_DURATION = 20;
-	private static final int INIT_DAMAGE = 25;
+	private static final int INIT_DAMAGE = 45;
 	private static final int INIT_SPEED = 7;
 	private static final int INIT_MAX_DELAY = 25;
 	private static final double BULLET_SPREAD = Math.PI/6;

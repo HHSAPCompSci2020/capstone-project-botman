@@ -14,7 +14,7 @@ public class Bullet extends Sprite{
 	private int damage; 
 	private int speed;
 	private double angle;
-	// update so it doesnt have to load image every time
+
 	
 	/**
 	 * Creates a new bullet

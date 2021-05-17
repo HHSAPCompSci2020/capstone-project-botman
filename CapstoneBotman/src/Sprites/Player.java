@@ -1,5 +1,7 @@
 package Sprites;
 
+import java.awt.Color;
+
 import processing.core.PApplet;
 /**@author kennywu**/
 public abstract class Player extends Sprite{
@@ -87,6 +89,15 @@ public abstract class Player extends Sprite{
 	@Override
 	public void draw(PApplet drawer) {
 		super.draw(drawer);
+		drawer.pushMatrix();
+		drawer.stroke(0);
+		drawer.fill(Color.GREEN.getRGB());
+		drawer.rect((x-(float)width/2), ((y-(float)height/2)-5), 
+				(float)(health)/maxHealth*width, (float)(height)/6);
+		drawer.fill(Color.RED.getRGB());
+		drawer.rect((x-(float)width/2) + (float)(health)/maxHealth*width, ((y-(float)height/2)-5), 
+				(float)(maxHealth-health)/maxHealth*width, (float)(height)/6);
+		drawer.popMatrix();
 		weapon.draw(drawer, angle);
 	}
 	/**

@@ -1,7 +1,11 @@
 package Sprites;
 
 import processing.core.PApplet;
-
+/**
+ * 
+ * @author kennywu
+ *
+ */
 public class SniperRifle extends Weapon{
 
 	private static final String FILE_IMAGE_NAME = "Sniper.png";
