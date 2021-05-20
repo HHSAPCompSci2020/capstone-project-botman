@@ -137,9 +137,14 @@ public abstract class Player extends Sprite{
 	 * Increments or decrements from health depending on
 	 * parameter being positive or negative respectively
 	 * @param healthVal increment or decrement value for health depending on positive or negative
+	 * @return true if health sum does not go over max health, false otherwise
 	 */
-	public void changeHealth(int healthVal) {
-		this.health += healthVal; 
+	public boolean changeHealth(int healthVal) {
+		if(health+healthVal > maxHealth) {
+			return false;
+		}
+		this.health += healthVal;
+		return true;
 	}
 	/**
 	 * Increments or decrements from cash depending on
