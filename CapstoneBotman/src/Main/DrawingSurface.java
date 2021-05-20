@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import Screens.*;
+import jay.jaysound.JayLayer;
+import jay.jaysound.JayLayerListener;
 import processing.core.PApplet;
 
 /**
@@ -24,6 +26,7 @@ public class DrawingSurface extends PApplet {
 	public static final int WIN_SCREEN = 5;
 	
 	private float ratioX, ratioY;
+	private JayLayer music;
 	
 	private ArrayList<Integer> keys;
 	
@@ -183,6 +186,36 @@ public class DrawingSurface extends PApplet {
 	 */
 	public Screen getScreen(int i) {
 		return screens.get(i);
+	}
+	
+	/**
+	 * Plays the given song (should be a .mp3 file found in the data folder). Loops until stopped.
+	 * @param song The song to play.
+	 */
+	public void playMusic(String song) {
+		stopMusic();
+		music = new JayLayer("data/", "data/", false);
+		music.addPlayList();
+		music.addSong(0, song);
+		music.changePlayList(0);
+		music.nextSong();
+	}
+	
+	/**
+	 * Stops playing music (if any music was playing).
+	 */
+	public void stopMusic() {
+		if (music != null) music.stopSong();
+	}
+	
+	/**
+	 * Plays the given sound effect (should be a .mp3 file found in the data folder).
+	 * @param effect The effect to play.
+	 */
+	public void playSoundEffect(String effect) {
+		JayLayer sound = new JayLayer("data/", "data/", false);
+		sound.addSoundEffect(effect);
+		sound.playSoundEffect(0);
 	}
 	
 }
