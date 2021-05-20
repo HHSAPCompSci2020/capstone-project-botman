@@ -3,22 +3,7 @@
 
 VALHUNT
 Authors: Kenny Wu, Aayush Kumar, Kyle Fu
-Revision: 4/23/21
-
-
-* 2D manhunt style, “play time”
-   * Multiplayer server
-   * Features can be varying complexity
-      * Simple guns to lasers, shop system, goals
-  
-  
-  
-
-===============================================    
-
-
-  
-
+Revision: 5/19/21
 
 
 Introduction: 
@@ -41,7 +26,7 @@ Instructions:
 
 Main menu
 -Start Game
--How to Play
+-Instructions
 -Exit
 
 
@@ -59,7 +44,6 @@ Escape to pause[f][g]
 
 
 
-Features List (THE ONLY SECTION THAT CANNOT CHANGE LATER):
 Must-have Features:
 * Rounds
    * Functioning Round Timer
@@ -84,7 +68,6 @@ Must-have Features:
 
 
 Want-to-have Features:
-[These are features that you would like to have by the project due date, but you’re unsure whether you’ll hit all of them. A good final project would have perhaps half of these completed. At least 5 are required. Again, fully describe each.]
 * Multiplayer through internet (maybe with Firebase?)
 * Hunter can buy three types of weapons:
    * Shotgun: many pellets, large spread, each pellet does little damage, magazine of 25 bullets, reload after 7 shots
@@ -103,7 +86,6 @@ Want-to-have Features:
 
 
 Stretch Features:
-[These are features that we agree a fully complete version of this program would have, but that you probably will not have time to implement. A good final project does not necessarily need to have any of these completed at all. At least 3 are required. Again, fully describe each.]
 * Obstacle physics
    * Bullets and/or the players can slightly affect the path and rotation of obstacles
 * Artificial Intelligence
@@ -136,24 +118,24 @@ Class List:[m]
    * MainMenu - main menu displayed when the program is launched
    * GameScreen - Screen that display the gameplay
    * InstructionScreen - Screen to display the instruction on how to play
-   * WinScreen - Screen to display who won
-   * Screen - Interface used to help create screens 
+   * WinScreen - Screen to display which player wins at end of game
+   * Screen - Interface used to help create screens and provide basic behaviors for screens 
 
 
 
 
 Credits:
-* List the group members and describe how each member contributed to the completion of the final program. This could be classes written, art assets created, leadership/organizational skills exercises, or other tasks. Initially, this is how you plan on splitting the work.
    * Kenny 
       * Sprite Package(Sprites, Weapons, etc.), sprite art assets
    * Aayush
       * Screens Package(except GameScreen) - MainScreen, Shop Screen, etc. 
    * Kyle
-      * Game development(GameScreen, DrawingScreen, Main, Item classes)
+      * Game development(GameScreen, DrawingScreen, Main)
    * Outside resources 
       * Processing Library - UI
       * Sound Effects - Kahoot, https://www.youtube.com/watch?v=DKoSh6J44SE, 
       	https://www.youtube.com/watch?v=zvj63k2ll4s)
+      *Drawings software - https://www.pixilart.com/draw?ref=home-page 
 
 
 
