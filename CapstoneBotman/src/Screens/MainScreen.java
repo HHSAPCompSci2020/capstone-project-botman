@@ -107,7 +107,7 @@ public class MainScreen extends Screen {
 	public void handleButtonEvents(GButton button, GEvent event) {
 		// if play is clicked, switch to instructions screen
 		if (button == instructions && event == GEvent.CLICKED) {
-			surface.switchScreen(1);
+			surface.switchScreen(DrawingSurface.INSTRUCTION_SCREEN);
 
 			// removes buttons
 			instructions.setVisible(false);
@@ -117,7 +117,7 @@ public class MainScreen extends Screen {
 		// if play is clicked, switch to game screen
 		if (button == play && event == GEvent.CLICKED) {
 			// gameScreen switch
-			Screen gameScreen = surface.getScreen(3);
+			Screen gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
 			if (gameScreen instanceof GameScreen) {
 				//((GameScreen) gameScreen).beginRound();
 				((GameScreen) gameScreen).startGame();

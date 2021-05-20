@@ -96,7 +96,7 @@ public class WinScreen extends Screen {
 		surface.textSize(35);
 
 		// declares winner
-		Screen gameScreen = surface.getScreen(3);
+		Screen gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
 		if (gameScreen instanceof GameScreen) {
 			runnerWins = ((GameScreen) gameScreen).getRunner().getWins();
 			hunterWins = ((GameScreen) gameScreen).getHunter().getWins();

@@ -111,13 +111,13 @@ public class PauseScreen extends Screen {
 		// if resume is clicked, switch to instructions screen
 		if (button == resume && event == GEvent.CLICKED) {
 			
-			surface.switchScreen(3);
+			surface.switchScreen(DrawingSurface.GAME_SCREEN);
 		}
 
 		// if play is clicked, switch to game screen
 		if (button == restart && event == GEvent.CLICKED) {
 			// gameScreen switch
-			Screen gameScreen = surface.getScreen(3);
+			Screen gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
 			if (gameScreen instanceof GameScreen) {
 				((GameScreen) gameScreen).startGame();
 			}
@@ -128,7 +128,7 @@ public class PauseScreen extends Screen {
 		// if play is clicked, switch to game screen
 		if (button == mainMenu && event == GEvent.CLICKED) {
 
-			surface.switchScreen(0);
+			surface.switchScreen(DrawingSurface.MAIN_SCREEN);
 		}
 
 		// removes buttons

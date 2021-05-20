@@ -94,11 +94,15 @@ public class InstructionScreen extends Screen{
 		
 		// draws instructions
 		surface.fill(0, 255, 0);
-		surface.textSize(20);
-		surface.text("Hunter: \nWASD to move\nMouse to aim\nMouse left click to shoot", 200, 150);
+		surface.textSize(15);
+		surface.text("Hunter: \nWASD to move\nMouse to aim\nMouse left click to shoot", 200, 400);
 		
 		surface.fill(255, 0, 0);
-		surface.text("Runer: \nArrow keys to move\nG to rotate aim left\nH to rotate aim right\nSpace to shoot", 200, 350);
+		surface.text("Controls:\nArrow keys to move\nG to rotate aim left\nH to rotate aim right\nSpace to shoot", 200, 275);
+		
+		surface.textSize(13);
+		surface.fill(0, 0, 255);
+		surface.text("Objective: \nRunner needs to survive 30s without dying to win that round\n and during that time\n Hunter needs to kill the Runner to win that round\n(Hunter respawns 5s after being killed)\nThe winner is the one who wins three rounds first.", 200, 150);
 	}
 	
 	/**
@@ -110,7 +114,7 @@ public class InstructionScreen extends Screen{
 	public void handleButtonEvents(GButton button, GEvent event) {
 		// if play is clicked, switch to game screen
 		if (button == backButton && event == GEvent.CLICKED) {
-			surface.switchScreen(0);
+			surface.switchScreen(DrawingSurface.MAIN_SCREEN);
 			
 			// removes buttons
 			instructions.setVisible(false);

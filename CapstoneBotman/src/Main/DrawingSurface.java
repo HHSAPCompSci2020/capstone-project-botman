@@ -20,8 +20,8 @@ public class DrawingSurface extends PApplet {
 	
 	public static final int MAIN_SCREEN = 0;
 	public static final int INSTRUCTION_SCREEN = 1;
-	public static final int SHOP_SCREEN = 2;
-	public static final int GAME_SCREEN = 3;
+	public static final int SHOP_SCREEN = 3;
+	public static final int GAME_SCREEN = 2;
 	public static final int PAUSE_SCREEN = 4;
 	public static final int WIN_SCREEN = 5;
 	
@@ -43,8 +43,8 @@ public class DrawingSurface extends PApplet {
 		screens = new ArrayList<Screen>();
 		screens.add(new MainScreen(400, 600, this));
 		screens.add(new InstructionScreen(400, 600, this));
-		screens.add(new ShopScreen(400, 600, this));
 		screens.add(new GameScreen(400, 600, this));
+		screens.add(new ShopScreen(400, 600, this));
 		screens.add(new PauseScreen(400, 600, this));
 		screens.add(new WinScreen(400, 600, this));
 		

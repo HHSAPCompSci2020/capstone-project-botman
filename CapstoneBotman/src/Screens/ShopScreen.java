@@ -1,5 +1,6 @@
 package Screens;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import Main.DrawingSurface;
@@ -130,7 +131,12 @@ public class ShopScreen extends Screen {
 
 	private int hCash;
 	private int rCash;
+	
+	Screen gameScreen;
 
+	Runner run;
+	Hunter hunt;
+	
 	/**
 	 * Sets up x, y, hunterShield, and runnerShield to an initial value of 0, sets
 	 * up nextVisislbe and hShop to true, and sets up rCash and hCash to 1000, and
@@ -150,6 +156,10 @@ public class ShopScreen extends Screen {
 		hunterShield = 0;
 		runnerShield = 0;
 
+		
+		
+		//gameScreen = surface.getScreen(surface.GAME_SCREEN);
+		
 		//hCash = 1000;
 		//rCash = 1000;
 
@@ -211,19 +221,30 @@ public class ShopScreen extends Screen {
 
 		halfArmor.setVisible(false);
 		fullArmor.setVisible(false);
+		
+		
 	}
 
 	/**
 	 * Draws the title and buttons on the screen
 	 */
 	public void draw() {
+		
+		gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
+		run = ((GameScreen) gameScreen).getRunner();
+		hunt = ((GameScreen) gameScreen).getHunter();
+		
+		hCash = hunt.getCash();
+		rCash = run.getCash();
+		
+		
 		surface.pushStyle();
 		surface.background(255, 255, 255);
 
 		if (hShop)
-			surface.fill(255, 0, 0);
+			surface.fill(Color.BLUE.getRGB());
 		else
-			surface.fill(0, 150, 0);
+			surface.fill(Color.RED.getRGB());
 
 		rButton.setVisible(true);
 		sButton.setVisible(true);
@@ -242,10 +263,11 @@ public class ShopScreen extends Screen {
 		sniper.draw(surface);
 		shotgun.draw(surface);
 
+		// lines color
 		if (hShop)
-			surface.stroke(255, 0, 0);
+			surface.stroke(Color.BLUE.getRGB());
 		else
-			surface.stroke(0, 150, 0);
+			surface.stroke(Color.RED.getRGB());
 
 		surface.strokeWeight(5);
 		surface.line(-5, 100, 500, 100);
@@ -273,17 +295,14 @@ public class ShopScreen extends Screen {
 	 * @param event  Event which gets performed on the button
 	 */
 	public void handleButtonEvents(GButton button, GEvent event) {
-		Screen gameScreen = surface.getScreen(surface.GAME_SCREEN);
-
-		Runner run = ((GameScreen) gameScreen).getRunner();
-		Hunter hunt = ((GameScreen) gameScreen).getHunter();
+		
 		
 		//hunt.setCash(1000);
 		//run.setCash(1000);
 
 		// exit button
 		if (button == exit && event == GEvent.CLICKED) {
-			gameScreen = surface.getScreen(3);
+			gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
 			if (gameScreen instanceof GameScreen) {
 				// ((GameScreen) gameScreen).beginRound();
 				((GameScreen) gameScreen).beginRound();
@@ -404,8 +423,8 @@ public class ShopScreen extends Screen {
 
 					if (rCash >= 100 && gameScreen instanceof GameScreen) {
 						rCash -= 100;
-						hunt.setCash(rCash - 100);
-						hunt.setToRifle();
+						run.setCash(rCash - 100);
+						run.setToRifle();
 						System.out.println("Runner bought rifle ($100)");
 					}
 
@@ -416,8 +435,8 @@ public class ShopScreen extends Screen {
 
 					if (rCash >= 150 && gameScreen instanceof GameScreen) {
 						rCash -= 150;
-						hunt.setCash(rCash - 150);
-						hunt.setToSniper();
+						run.setCash(rCash - 150);
+						run.setToSniper();
 						System.out.println("Runner bought sniper ($150)");
 					}
 
@@ -428,8 +447,8 @@ public class ShopScreen extends Screen {
 
 					if (rCash >= 75 && gameScreen instanceof GameScreen) {
 						rCash -= 75;
-						hunt.setCash(rCash - 75);
-						hunt.setToShotgun();
+						run.setCash(rCash - 75);
+						run.setToShotgun();
 
 						System.out.println("Runner bought shotgun ($75)");
 					}
@@ -537,13 +556,13 @@ public class ShopScreen extends Screen {
 					if (rCash >= 25 && gameScreen instanceof GameScreen && runnerShield == 0) {
 						// rCash += 100;
 						rCash -= 25;
-						System.out.println(rCash);
+						//System.out.println(rCash);
 						run.setCash(rCash - 25);
 						run.setMaxHealth(125);
 						System.out.println("Runner bought half armor ($25)");
 					}
 
-					hunt.setCash(rCash);
+					run.setCash(rCash);
 
 					runnerShield = 25;
 
