@@ -183,7 +183,7 @@ public class GameScreen extends Screen {
 			// Check intersection with players
 			// Note: If players move super fast, bullets might be able to hit the player that launched them
 			if (runnerHitbox.intersects(b.getHitBox())) {
-				runner.changeHealth(-b.getDamage() / 2);
+				runner.changeHealth((int) (-b.getDamage() / 1.5));
 				toRemove = true;
 			}
 			if (hunterAlive() && hunterHitbox.intersects(b.getHitBox())) {
@@ -462,27 +462,9 @@ public class GameScreen extends Screen {
 		surface.pushStyle();
 		surface.background(184, 226, 170);
 		
-		// Debug info
-		if (DEBUG_MODE) {
-			surface.textAlign(PConstants.CENTER, PConstants.CENTER);
-			surface.textSize(24);
-			surface.fill(0, 100, 0);
-			surface.text(String.format("DEBUG INFO", surface.frameRate), 200, 140);
-			surface.text(String.format("FPS: %.2f", surface.frameRate), 200, 170);
-			surface.text(String.format("Timer: %.2f", timer / 60.0), 200, 200);
-			surface.text(String.format("R %d VS %d H", runner.getWins(), hunter.getWins()), 200, 230);
-			surface.text(String.format("Runner HP: %d", runner.getHealth()), 200, 260);
-			surface.text(String.format("Hunter HP: %d", hunter.getHealth()), 200, 290);
-			surface.text(String.format("Runner $: %d", runner.getCash()), 200, 320);
-			surface.text(String.format("Hunter $: %d", hunter.getCash()), 200, 350);
-		}
-		
 		// Draw all objects
 		if (goal != null)
 			goal.draw(surface);
-		runner.draw(surface);
-		if (hunterAlive())
-			hunter.draw(surface);
 		for (Obstacle o : obstacles) {
 			o.draw(surface);
 		}
@@ -494,6 +476,28 @@ public class GameScreen extends Screen {
 		}
 		for (Money m : moneyPickups) {
 			m.draw(surface);
+		}
+		runner.draw(surface);
+		if (hunterAlive())
+			hunter.draw(surface);
+		
+		// Text
+		surface.textAlign(PConstants.CENTER, PConstants.CENTER);
+		surface.textSize(24);
+		surface.fill(0, 100, 0);
+		if (DEBUG_MODE) {
+			surface.text(String.format("DEBUG INFO", surface.frameRate), 200, 140);
+			surface.text(String.format("FPS: %.2f", surface.frameRate), 200, 170);
+			surface.text(String.format("Timer: %.2f", timer / 60.0), 200, 200);
+			surface.text(String.format("R %d VS %d H", runner.getWins(), hunter.getWins()), 200, 230);
+			surface.text(String.format("Runner HP: %d", runner.getHealth()), 200, 260);
+			surface.text(String.format("Hunter HP: %d", hunter.getHealth()), 200, 290);
+			surface.text(String.format("Runner $: %d", runner.getCash()), 200, 320);
+			surface.text(String.format("Hunter $: %d", hunter.getCash()), 200, 350);
+		} else {
+			surface.text(String.format("%d", runner.getWins()), WIDTH - 20, HEIGHT / 2 - 30);
+			surface.text("VS", WIDTH - 20, HEIGHT / 2);
+			surface.text(String.format("%d", hunter.getWins()), WIDTH - 20, HEIGHT / 2 + 30);
 		}
 		
 		// Post drawing
@@ -589,8 +593,8 @@ public class GameScreen extends Screen {
 	 * @postcondition The currently active screen will be ShopScreen.
 	 */
 	public void prepareRound() {
-		runner.changeCash(100);
-		hunter.changeCash(100);
+		runner.changeCash(50);
+		hunter.changeCash(50);
 		// Reset some stats
 		runner.setMaxHealth(100);
 		hunter.setMaxHealth(100);
