@@ -3,7 +3,7 @@
 
 VALHUNT
 Authors: Kenny Wu, Aayush Kumar, Kyle Fu
-Revision: 5/19/21
+Revision: 5/20/21
 
 
 Introduction: 
@@ -15,9 +15,10 @@ cross the finish line.[a] However if the runner were to be “defeated” by the
 he loses. The 2nd goal (hunter) is to stop the runner from crossing the finish line 
 before time runs out. The game features multiple rounds where after each round 
 the winner and loser gains a set of money (less of loser, more for winner). The money can 
-be used to buy items: For each player, items that can help in combat to win rounds.[b]
+be used to buy items: For each player, items that can help in combat to win rounds.
 The world will feature a 2d scrolling world where the world “scrolls'' 
-vertically down as the timer countdown. This world will be seen with a top-down view[c].
+vertically down as the timer countdown. This world will be seen with a top-down view.
+The world will be generated with obstacles, health, and cash pickups 
 
 
 
@@ -96,9 +97,7 @@ Stretch Features:
 
 
 
-Class List:[m]
-[This section lists the Java classes that make up the program and very briefly describes what each represents. It’s totally fine to put this section in list format and not to use full sentences.]
-
+Class List:
 
 * Main Class  - runs the program
 * Sprite Class - contains the coordinate, rectangle hitboxes, images for the sprites, etc.
@@ -119,7 +118,9 @@ Class List:[m]
    * GameScreen - Screen that display the gameplay
    * InstructionScreen - Screen to display the instruction on how to play
    * WinScreen - Screen to display which player wins at end of game
-   * Screen - Interface used to help create screens and provide basic behaviors for screens 
+   * Screen - Interface used to help create screens and provide basic behaviors for screens
+* Map - class that generates scrolling map along with generating the locations of obstacles and pickups in the maps
+ 
 
 
 
@@ -130,11 +131,13 @@ Credits:
    * Aayush
       * Screens Package(except GameScreen) - MainScreen, Shop Screen, etc. 
    * Kyle
-      * Game development(GameScreen, DrawingScreen, Main)
+      * Game development(GameScreen, DrawingScreen, Main, and Map)
    * Outside resources 
       * Processing Library - UI
       * Sound Effects - Kahoot, https://www.youtube.com/watch?v=DKoSh6J44SE, 
       	https://www.youtube.com/watch?v=zvj63k2ll4s)
+      	https://www.youtube.com/watch?v=kYfaFrXEeiU
+      	https://www.youtube.com/watch?v=qaNhBYtBFPw
       *Drawings software - https://www.pixilart.com/draw?ref=home-page 
 
 

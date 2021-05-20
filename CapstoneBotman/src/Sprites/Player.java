@@ -31,7 +31,6 @@ public abstract class Player extends Sprite{
 			, int cash) {
 		super(x, y, width, height, fileName, drawer);
 		initWeapons(drawer);
-		weapon = weapons[0];
 		wins = 0;
 		losses = 0;
 		vX = 0;
@@ -51,7 +50,6 @@ public abstract class Player extends Sprite{
 	public Player(int x, int y, int width, int height, String fileName, PApplet drawer) {
 		super(x, y, width, height, fileName, drawer);
 		initWeapons(drawer);
-		weapon = weapons[0];
 		cash = 0;
 		health = 0;
 		wins = 0;
@@ -66,6 +64,12 @@ public abstract class Player extends Sprite{
 		weapons [0] = new Rifle(x, y, width, height/2, drawer);
 		weapons [1] = new SniperRifle(x, y, width, height/2, drawer);
 		weapons [2] = new Shotgun(x, y, width, height/2, drawer);
+	}
+	/**
+	 * Sets the weapon the player has to no weapon
+	 */
+	public void setToNone() {
+		weapon = null; 
 	}
 	
 	/**
@@ -98,13 +102,18 @@ public abstract class Player extends Sprite{
 		drawer.rect((x-(float)width/2) + (float)(health)/maxHealth*width, ((y-(float)height/2)-5), 
 				(float)(maxHealth-health)/maxHealth*width, (float)(height)/10);
 		drawer.popMatrix();
-		weapon.draw(drawer, angle);
+		if(weapon != null) {
+			weapon.draw(drawer, angle);
+		}
 	}
 	/**
 	 * Fire or creates a new bullet
-	 * @return new Bullet object
+	 * @return new Bullet object, null if player has no weapon
 	 */
 	public Bullet fire() {
+		if(weapon == null) {
+			return null;
+		}
 		return weapon.fire();
 	}
 
