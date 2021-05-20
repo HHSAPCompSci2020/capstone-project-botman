@@ -141,6 +141,7 @@ public abstract class Player extends Sprite{
 	 */
 	public boolean changeHealth(int healthVal) {
 		if(health+healthVal > maxHealth) {
+			this.health = maxHealth;
 			return false;
 		}
 		this.health += healthVal;

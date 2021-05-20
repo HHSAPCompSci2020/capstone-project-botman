@@ -8,6 +8,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import Game.Map;
 import Main.DrawingSurface;
 import Sprites.*;
 import processing.core.PConstants;
@@ -20,9 +21,8 @@ import processing.core.PConstants;
  */
 public class GameScreen extends Screen {
 	
-	private static final boolean DEBUG_MODE = true;
+	private static final boolean DEBUG_MODE = false;
 	private static final double ROTATE_SPEED = 0.07;
-	private static final int ROUND_DURATION = 30;
 	private static final int MAX_SPEED = 5;
 	private static final int SCROLL_SPEED = 2;
 	private static final int RESPAWN_DELAY = 180;
@@ -30,13 +30,16 @@ public class GameScreen extends Screen {
 	
 	private DrawingSurface surface;
 	
+	private Map map;
 	private Runner runner;
 	private Hunter hunter;
+	private Goal goal;
 	private ArrayList<Obstacle> obstacles;
 	private ArrayList<Bullet> bullets;
 	private ArrayList<HealthPack> healthPickups;
 	private ArrayList<Money> moneyPickups;
 	private int timer, hunterRespawn;
+	private boolean goalReached;
 	
 	/**
 	 * Constructs a GameScreen.
@@ -77,19 +80,23 @@ public class GameScreen extends Screen {
 	
 	private void updatePre() {
 		// Screen scroll
-		runner.translate(0, SCROLL_SPEED);
-		hunter.translate(0, SCROLL_SPEED);
-		for (Obstacle o : obstacles) {
-			o.translate(0, SCROLL_SPEED);
-		}
-		for (Bullet b : bullets) {
-			b.translate(0, SCROLL_SPEED);
-		}
-		for (HealthPack h : healthPickups) {
-			h.translate(0, SCROLL_SPEED);
-		}
-		for (Money m : moneyPickups) {
-			m.translate(0, SCROLL_SPEED);
+		if (map.scroll(SCROLL_SPEED)) {
+			runner.translate(0, SCROLL_SPEED);
+			hunter.translate(0, SCROLL_SPEED);
+			if (goal != null)
+				goal.translate(0, SCROLL_SPEED);
+			for (Obstacle o : obstacles) {
+				o.translate(0, SCROLL_SPEED);
+			}
+			for (Bullet b : bullets) {
+				b.translate(0, SCROLL_SPEED);
+			}
+			for (HealthPack h : healthPickups) {
+				h.translate(0, SCROLL_SPEED);
+			}
+			for (Money m : moneyPickups) {
+				m.translate(0, SCROLL_SPEED);
+			}
 		}
 		
 		// Runner controls
@@ -124,7 +131,6 @@ public class GameScreen extends Screen {
 				if (fired)
 					surface.playSoundEffect("vandalTap.mp3");
 			}
-			// TODO: Aiming is very slightly off center
 			Point mouseLoc = surface.getMouseLocation();
 			double dx = mouseLoc.x - hunter.getX();
 			double dy = mouseLoc.y - hunter.getY();
@@ -143,15 +149,8 @@ public class GameScreen extends Screen {
 	}
 	
 	private void updateMid() {
-		// TODO: Make obstacle generation more complex
-		// Add obstacles
-		if (timer % 60 == 0) {
-			obstacles.add(new Obstacle((int) (401 * Math.random()), -80, 40, 40, surface));
-		} else if (timer % 60 == 20) {
-			healthPickups.add(new HealthPack((int) (401 * Math.random()), -80, 30, 20, surface, 69));
-		} else if (timer % 60 == 40) {
-			moneyPickups.add(new Money((int) (401 * Math.random()), -80, 30, 15, surface, 42));
-		}
+		// Generate the map
+		map.generate();
 		
 		// Move players while checking obstacle collisions
 		moveWithCollisionChecks(runner);
@@ -166,6 +165,10 @@ public class GameScreen extends Screen {
 		Rectangle2D hRect = hunter.getHitBox();
 		Ellipse2D.Double hunterHitbox = new Ellipse2D.Double(hRect.getX(), hRect.getY(), hRect.getWidth(), hRect.getHeight());
 		
+		// Goal collision
+		if (goal != null && runnerHitbox.intersects(goal.getHitBox()))
+			goalReached = true;
+		
 		// Bullet off screen & collisions
 		for (int i = 0; i < bullets.size(); i++) {
 			Bullet b = bullets.get(i);
@@ -178,9 +181,9 @@ public class GameScreen extends Screen {
 					toRemove = true;
 			
 			// Check intersection with players
-			// TODO: Bullets might be able to hit the player that launched them
+			// Note: If players move super fast, bullets might be able to hit the player that launched them
 			if (runnerHitbox.intersects(b.getHitBox())) {
-				runner.changeHealth(-b.getDamage() / 3);
+				runner.changeHealth(-b.getDamage() / 2);
 				toRemove = true;
 			}
 			if (hunterAlive() && hunterHitbox.intersects(b.getHitBox())) {
@@ -208,6 +211,7 @@ public class GameScreen extends Screen {
 			}
 			
 			if (toRemove) {
+				surface.playSoundEffect("health.mp3");
 				healthPickups.remove(i);
 				i--;
 			}
@@ -227,6 +231,7 @@ public class GameScreen extends Screen {
 			}
 			
 			if (toRemove) {
+				surface.playSoundEffect("money.mp3");
 				moneyPickups.remove(i);
 				i--;
 			}
@@ -273,13 +278,12 @@ public class GameScreen extends Screen {
 	private void updatePost() {
 		// Pause
 		if (surface.isPressed(KeyEvent.VK_P)) {
-			// TODO: Find a way to pause and resume the song
 			surface.switchScreen(DrawingSurface.PAUSE_SCREEN);
 		}
 		
 		// Game logic
-		timer--;
-		if (timer <= 0 || runner.getHealth() <= 0)
+		timer++;
+		if (goalReached || runner.getHealth() <= 0)
 			endRound();
 		if (hunterAlive() && hunter.getHealth() <= 0) {
 			surface.playSoundEffect("boom.mp3");
@@ -363,7 +367,7 @@ public class GameScreen extends Screen {
 	private void moveWithCollisionChecks(Player player) {
 		Rectangle rect = player.getHitBox();
 		for (Obstacle o : obstacles) {
-			// TODO: Improve collisions to allow for getting out of corners
+			// Maybe improve collisions to allow for getting out of corners
 			// Do this by attempting to translate a bit in the direction with least velocity
 			// Pre-move (allows for a bit of sliding)
 			// if (moveOutOfObstacle(player, o, 3)) continue;
@@ -454,7 +458,7 @@ public class GameScreen extends Screen {
 	public void draw() {
 		update();
 		
-		// Pre drawingw
+		// Pre drawing
 		surface.pushStyle();
 		surface.background(184, 226, 170);
 		
@@ -474,6 +478,8 @@ public class GameScreen extends Screen {
 		}
 		
 		// Draw all objects
+		if (goal != null)
+			goal.draw(surface);
 		runner.draw(surface);
 		if (hunterAlive())
 			hunter.draw(surface);
@@ -509,14 +515,72 @@ public class GameScreen extends Screen {
 	}
 	
 	private void spawnHunter() {
-		// TODO: Do not spawn hunter on top of obstacles or bullets
-		// Random x to avoid spawn camping
-		hunter.setX(25 + (int) (Math.random() * (WIDTH - 50)));
-		hunter.setY(400);
+		// Do not spawn hunter on top of obstacles or bullets (20 attempts max)
+		for (int i = 0; i < 20; i++) {
+			// Random x to avoid spawn camping
+			hunter.setX(25 + (int) (Math.random() * (WIDTH - 50)));
+			hunter.setY(400);
+			Rectangle2D hRect = hunter.getHitBox();
+			Ellipse2D.Double hunterHitbox = new Ellipse2D.Double(hRect.getX(), hRect.getY(), hRect.getWidth(), hRect.getHeight());
+			boolean valid = true;
+			for (Obstacle o : obstacles) {
+				if (hunterHitbox.intersects(o.getHitBox())) {
+					valid = false;
+					break;
+				}
+			}
+			if (valid) break;
+		}
 		hunter.setvX(0);
 		hunter.setvY(0);
 		hunter.setAngle(-Math.PI / 2);
 		hunter.setHealth(hunter.getMaxHealth());
+	}
+	
+	/**
+	 * Spawns an obstacle.
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 */
+	public void spawnObstacle(int x, int y, int width, int height) {
+		obstacles.add(new Obstacle(x, y, width, height, surface));
+	}
+	
+	/**
+	 * Spawns a health pickup.
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 * @param health the health the object provides when picked up
+	 */
+	public void spawnHealthPickup(int x, int y, int width, int height, int health) {
+		healthPickups.add(new HealthPack(x, y, width, height, surface, health));
+	}
+	
+	/**
+	 * Spwans a money pickup.
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 * @param money cash the money object provides when picked up
+	 */
+	public void spawnMoneyPickup(int x, int y, int width, int height, int money) {
+		moneyPickups.add(new Money(x, y, width, height, surface, money));
+	}
+	
+	/**
+	 * Spawns the goal. Should be called only once, at the end of the round.
+	 * @param x center x coordinate
+	 * @param y center y coordinate
+	 * @param width width of sprite
+	 * @param height height of sprite
+	 */
+	public void spawnGoal(int x, int y, int width, int height) {
+		goal = new Goal(x, y, width, height, surface);
 	}
 	
 	/**
@@ -540,16 +604,21 @@ public class GameScreen extends Screen {
 	 */
 	public void beginRound() {
 		surface.switchScreen(DrawingSurface.GAME_SCREEN);
-		spawnRunner();
-		spawnHunter();
+		goal = null;
 		obstacles.clear();
 		bullets.clear();
 		healthPickups.clear();
 		moneyPickups.clear();
-		timer = ROUND_DURATION * 60;
+		goalReached = false;
+		timer = 0;
 		hunterRespawn = -1;
-		if (Math.random() < 0.5) surface.playMusic("musicKahoot1.mp3");
-		else surface.playMusic("musicKahoot2.mp3");
+		
+		// Choose the map
+		map = new Map("map1.txt", this);
+		map.generate();
+		spawnRunner();
+		spawnHunter();
+		surface.playMusic(map.getSong());
 	}
 	
 	/**
@@ -557,7 +626,7 @@ public class GameScreen extends Screen {
 	 * @precondition One of the win conditions must be met.
 	 */
 	public void endRound() {
-		if (timer <= 0) {
+		if (goalReached) {
 			surface.playSoundEffect("kahootGong.mp3");
 			runner.setWins(runner.getWins() + 1);
 			hunter.setLosses(hunter.getLosses() + 1);
@@ -569,7 +638,7 @@ public class GameScreen extends Screen {
 			hunter.changeCash(50);
 		} else {
 			System.err.println("Warning: endRound() called with no winner!");
-			System.err.printf("Timer %d, Runner health %d\n", timer, runner.getHealth());
+			System.err.printf("Goal reached %d, Runner health %d\n", goalReached, runner.getHealth());
 		}
 		// End music
 		surface.stopMusic();
@@ -578,8 +647,8 @@ public class GameScreen extends Screen {
 			surface.switchScreen(DrawingSurface.WIN_SCREEN);
 			return;
 		}
-		// TODO: Wait a bit before advancing
-		// TODO: No swap
+		// Maybe wait a bit before advancing?
+		// For now, no swap
 		// Swap stats
 //		int temp = runner.getWins();
 //		runner.setWins(hunter.getWins());

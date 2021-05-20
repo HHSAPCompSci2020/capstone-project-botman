@@ -7,6 +7,12 @@ import javax.swing.JFrame;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
 
+/**
+ * 
+ * The Main class is the class containing the main() method.
+ * @author Kyle Fu
+ *
+ */
 public class Main {
 	
 	public static void main(String[] args) {
