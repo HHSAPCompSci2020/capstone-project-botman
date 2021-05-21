@@ -793,14 +793,14 @@ public class GameScreen extends Screen {
 	/**
 	 * Enables runner AI (singleplayer).
 	 */
-	public void enableSingleplayer() {
+	public void useSingleplayer() {
 		runnerAI.setEnabled(true);
 	}
 	
 	/**
 	 * Disables runner AI (multiplayer).
 	 */
-	public void disableSingleplayer() {
+	public void useMultiplayer() {
 		runnerAI.setEnabled(false);
 	}
 	
