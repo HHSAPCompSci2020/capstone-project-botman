@@ -10,7 +10,7 @@ public class SniperRifle extends Weapon{
 
 	private static final String FILE_IMAGE_NAME = "Sniper.png";
 	public static final int INIT_DURATION = 70;
-	public static final int INIT_DAMAGE = 200;
+	public static final int INIT_DAMAGE = 125;
 	public static final int INIT_SPEED = 12;
 	public static final int INIT_MAX_DELAY = 50;
 	/**

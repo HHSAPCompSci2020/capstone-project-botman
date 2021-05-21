@@ -21,6 +21,7 @@ public class Map {
 	private int tileOffset, tileSize;
 	private int healthAmount, moneyAmount;
 	private String song;
+	private String name;
 	
 	private char[][] map;
 	
@@ -66,14 +67,16 @@ public class Map {
 	 * Line 3: The song associated with the map.<br>
 	 * The rest of the lines: Each row contains [tile width] characters denoting the map.<br>
 	 * 
-	 * @param filename The filename of the map. Should be a .txt file in the /data directory.
+	 * @param name The name of the map. Should be the name of a map folder in the /data directory.
 	 * @param gameScreen The game screen using this map generator.
 	 */
-	public Map(String filename, GameScreen game) {
+	public Map(String name, GameScreen game) {
 		this.game = game;
+		this.name = name;
+		String filename = "data/" + name + "/map.txt";
 		Scanner sc;
 		try {
-			sc = new Scanner(new File("data/" + filename));
+			sc = new Scanner(new File(filename));
 		} catch (FileNotFoundException e) {
 			System.err.println("Map file not found: " + filename);
 			return;
@@ -91,6 +94,7 @@ public class Map {
 			String str = sc.nextLine();
 			data.add(str);
 		}
+		sc.close();
 		int mapHeight = data.size();
 		
 		// Setup the map
@@ -132,18 +136,18 @@ public class Map {
 		while (currRow > targetRow) {
 			for (int j = 0; j < map[0].length; j++) {
 				int x = tileOffset + tileSize / 2 + j * tileSize;
-				int y = scrollPos - (map.length - currRow) * tileSize - 150;
+				int y = scrollPos - (map.length - currRow) * tileSize - 200;
 				char c = map[currRow][j];
 				if (c == 'X') {
-					game.spawnObstacle(x, y, 40, 40);
+					game.spawnObstacle(x, y, tileSize, tileSize);
 				} else if (c == 'H') {
-					game.spawnHealthPickup(x, y, 30, 20, healthAmount);
+					game.spawnHealthPickup(x, y, Math.round(tileSize * 0.75f), Math.round(tileSize * 0.5f), healthAmount);
 				} else if (c == '$') {
-					game.spawnMoneyPickup(x, y, 30, 15, moneyAmount);
+					game.spawnMoneyPickup(x, y, Math.round(tileSize * 0.75f), Math.round(tileSize * 0.375f), moneyAmount);
 				} else if (c == 'G') {
-					game.spawnGoal(x, y, 200, 150);
+					game.spawnGoal(x, y, Math.round(tileSize * 5f), Math.round(tileSize * 3.75f));
 				} else if (c == 'g') {
-					game.spawnGoal(x + tileSize / 2, y, 200, 150);
+					game.spawnGoal(x + tileSize / 2, y, Math.round(tileSize * 5f), Math.round(tileSize * 3.75f));
 				} else if (c == '.') {
 					// Spawn nothing
 				} else {
@@ -168,6 +172,14 @@ public class Map {
 	 */
 	public String getSong() {
 		return song;
+	}
+	
+	/**
+	 * Gets the name of the map.
+	 * @return The name.
+	 */
+	public String getName() {
+		return name;
 	}
 	
 }

@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import Game.Map;
+import Game.RunnerAI;
 import Main.DrawingSurface;
 import Sprites.*;
 import processing.core.PConstants;
@@ -21,12 +22,35 @@ import processing.core.PConstants;
  */
 public class GameScreen extends Screen {
 	
-	private static final boolean DEBUG_MODE = false;
-	private static final double ROTATE_SPEED = 0.07;
-	private static final int MAX_SPEED = 5;
-	private static final int SCROLL_SPEED = 2;
-	private static final int RESPAWN_DELAY = 180;
-	private static final int NUM_WINS = 3;
+	/**
+	 * Whether the game is in debug mode.
+	 */
+	public static final boolean DEBUG_MODE = false;
+	
+	/**
+	 * Whether the runner path should be recorded.
+	 */
+	public static final boolean RECORD_PATH = true;
+	
+	/**
+	 * The rotation speed of the runner, in radians.
+	 */
+	public static final double ROTATE_SPEED = 0.07;
+	
+	/**
+	 * The max speed of players (independent for each direction).
+	 */
+	public static final int MAX_SPEED = 5;
+	
+	/**
+	 * The respawn delay of the hunter, in frames.
+	 */
+	public static final int RESPAWN_DELAY = 180;
+	
+	/**
+	 * The number of round wins required to win a game.
+	 */
+	public static final int NUM_WINS = 3;
 	
 	private DrawingSurface surface;
 	
@@ -40,6 +64,7 @@ public class GameScreen extends Screen {
 	private ArrayList<Money> moneyPickups;
 	private int timer, hunterRespawn;
 	private boolean goalReached;
+	private RunnerAI runnerAI;
 	
 	/**
 	 * Constructs a GameScreen.
@@ -64,6 +89,7 @@ public class GameScreen extends Screen {
 		bullets = new ArrayList<Bullet>();
 		healthPickups = new ArrayList<HealthPack>();
 		moneyPickups = new ArrayList<Money>();
+		runnerAI = new RunnerAI(this);
 	}
 	
 	/**
@@ -72,7 +98,7 @@ public class GameScreen extends Screen {
 	public void update() {
 		// Screen scroll, update velocities, handle controls
 		updatePre();
-		// Add obstacles, check collisions, move players
+		// Generate map, check collisions, move players
 		updateMid();
 		// Handle game logic
 		updatePost();
@@ -80,34 +106,40 @@ public class GameScreen extends Screen {
 	
 	private void updatePre() {
 		// Screen scroll
-		if (map.scroll(SCROLL_SPEED)) {
-			runner.translate(0, SCROLL_SPEED);
-			hunter.translate(0, SCROLL_SPEED);
+		if (map.scroll(map.getScrollSpeed())) {
+			runner.translate(0, map.getScrollSpeed());
+			hunter.translate(0, map.getScrollSpeed());
 			if (goal != null)
-				goal.translate(0, SCROLL_SPEED);
+				goal.translate(0, map.getScrollSpeed());
 			for (Obstacle o : obstacles) {
-				o.translate(0, SCROLL_SPEED);
+				o.translate(0, map.getScrollSpeed());
 			}
 			for (Bullet b : bullets) {
-				b.translate(0, SCROLL_SPEED);
+				b.translate(0, map.getScrollSpeed());
 			}
 			for (HealthPack h : healthPickups) {
-				h.translate(0, SCROLL_SPEED);
+				h.translate(0, map.getScrollSpeed());
 			}
 			for (Money m : moneyPickups) {
-				m.translate(0, SCROLL_SPEED);
+				m.translate(0, map.getScrollSpeed());
 			}
 		}
 		
 		// Runner controls
-		keepPlayerInBounds(runner);
-		controlPlayer(runner, KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D);
-		if (surface.isPressed(KeyEvent.VK_G))
-			runner.setAngle(runner.getAngle() - ROTATE_SPEED);
-		if (surface.isPressed(KeyEvent.VK_H))
-			runner.setAngle(runner.getAngle() + ROTATE_SPEED);
-		if (surface.isPressed(KeyEvent.VK_SPACE)) {
-			boolean fired = false;
+		boolean fired = false;
+		if (!runnerAI.isEnabled()) {
+			controlPlayer(runner, KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D);
+			if (surface.isPressed(KeyEvent.VK_G))
+				runner.setAngle(runner.getAngle() - ROTATE_SPEED);
+			if (surface.isPressed(KeyEvent.VK_H))
+				runner.setAngle(runner.getAngle() + ROTATE_SPEED);
+			if (surface.isPressed(KeyEvent.VK_SPACE))
+				fired = true;
+		} else {
+			fired = runnerAI.controlRunner();
+		}
+		if (fired && runner.getWeapon() != null) {
+			fired = false;
 			while (runner.getWeapon().getCurrDelay() <= 0) {
 				Bullet bullet = runner.fire();
 				bullets.add(bullet);
@@ -116,13 +148,13 @@ public class GameScreen extends Screen {
 			if (fired)
 				surface.playSoundEffect("vandalTap.mp3");
 		}
+		keepPlayerInBounds(runner);
 		
 		// Hunter controls
 		if (hunterAlive()) {
-			keepPlayerInBounds(hunter);
 			controlPlayer(hunter, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT);
-			if (surface.isClicked(PConstants.LEFT)) {
-				boolean fired = false;
+			if (surface.isClicked(PConstants.LEFT) && hunter.getWeapon() != null) {
+				fired = false;
 				while (hunter.getWeapon().getCurrDelay() <= 0) {
 					Bullet bullet = hunter.fire();
 					bullets.add(bullet);
@@ -136,6 +168,7 @@ public class GameScreen extends Screen {
 			double dy = mouseLoc.y - hunter.getY();
 			double angle = Math.atan2(dy, dx);
 			hunter.setAngle(angle);
+			keepPlayerInBounds(hunter);
 		} else {
 			if (hunterRespawn == 0)
 				spawnHunter();
@@ -155,6 +188,10 @@ public class GameScreen extends Screen {
 		// Move players while checking obstacle collisions
 		moveWithCollisionChecks(runner);
 		moveWithCollisionChecks(hunter);
+		
+		// Path recording
+		if (RECORD_PATH)
+			runnerAI.recordPath();
 		
 		// Off screen
 		removeOffScreen();
@@ -241,7 +278,7 @@ public class GameScreen extends Screen {
 		Area areaIntersect = new Area(runnerHitbox);
 		areaIntersect.intersect(new Area(hunterHitbox));
 		if (hunterAlive() && !areaIntersect.isEmpty()) {
-			runner.changeHealth(-hunter.getHealth() / 2);
+			runner.changeHealth((int) (-hunter.getHealth() / 2.5));
 			hunter.setHealth(0);
 		}
 	}
@@ -277,9 +314,8 @@ public class GameScreen extends Screen {
 	
 	private void updatePost() {
 		// Pause
-		if (surface.isPressed(KeyEvent.VK_P)) {
+		if (surface.isPressed(KeyEvent.VK_P))
 			surface.switchScreen(DrawingSurface.PAUSE_SCREEN);
-		}
 		
 		// Game logic
 		timer++;
@@ -287,7 +323,7 @@ public class GameScreen extends Screen {
 			endRound();
 		if (hunterAlive() && hunter.getHealth() <= 0) {
 			surface.playSoundEffect("boom.mp3");
-			runner.changeCash(25);
+			runner.changeCash(10);
 			hunterRespawn = RESPAWN_DELAY;
 		}
 	}
@@ -326,23 +362,13 @@ public class GameScreen extends Screen {
 			else if (currvY > 0) currvY--;
 			player.setvY(currvY);
 		}
-		
-		// Constrain x and y speed
-		if (player.getvX() < -MAX_SPEED)
-			player.setvX(player.getvX() + 2);
-		else if (player.getvX() > MAX_SPEED)
-			player.setvX(player.getvX() - 2);
-		if (player.getvY() < -MAX_SPEED)
-			player.setvY(player.getvY() + 2);
-		else if (player.getvY() > MAX_SPEED)
-			player.setvY(player.getvY() - 2);
 	}
 	
 	private void keepPlayerInBounds(Player player) {
 		// Top border
 		if (player.getHitBox().getMaxY() < player.getHeight()) {
 			player.translate(0, (int) (player.getHeight() - player.getHitBox().getMaxY()));
-			player.setvY(-SCROLL_SPEED);
+			player.setvY(-map.getScrollSpeed());
 		}
 		
 		// Bottom border
@@ -362,6 +388,16 @@ public class GameScreen extends Screen {
 			player.translate((int) (WIDTH - player.getWidth() - player.getHitBox().getMinX()), 0);
 			player.setvX(0);
 		}
+		
+		// Constrain x and y speed
+		if (player.getvX() < -MAX_SPEED)
+			player.setvX(player.getvX() + 1);
+		else if (player.getvX() > MAX_SPEED)
+			player.setvX(player.getvX() - 1);
+		if (player.getvY() < -MAX_SPEED)
+			player.setvY(player.getvY() + 1);
+		else if (player.getvY() > MAX_SPEED)
+			player.setvY(player.getvY() - 1);
 	}
 	
 	private void moveWithCollisionChecks(Player player) {
@@ -412,9 +448,7 @@ public class GameScreen extends Screen {
 		player.move();
 	}
 	
-	/**
-	 * This should be used as a last resort (may cause very large jumps)!
-	 */
+	// This should be used as a last resort (may cause very large jumps)!
 	private boolean moveOutOfObstacle(Player player, Obstacle obstacle, int maxD) {
 		// Find smallest movement out
 		Rectangle rect = player.getHitBox();
@@ -456,11 +490,13 @@ public class GameScreen extends Screen {
 	 */
 	@Override
 	public void draw() {
-		update();
-		
 		// Pre drawing
 		surface.pushStyle();
-		surface.background(184, 226, 170);
+		// surface.background(184, 226, 170);
+		surface.background(227, 197, 152);
+		
+		// Update
+		update();
 		
 		// Draw all objects
 		if (goal != null)
@@ -484,8 +520,8 @@ public class GameScreen extends Screen {
 		// Text
 		surface.textAlign(PConstants.CENTER, PConstants.CENTER);
 		surface.textSize(24);
-		surface.fill(0, 100, 0);
 		if (DEBUG_MODE) {
+			surface.fill(0, 100, 0);
 			surface.text(String.format("DEBUG INFO", surface.frameRate), 200, 140);
 			surface.text(String.format("FPS: %.2f", surface.frameRate), 200, 170);
 			surface.text(String.format("Timer: %.2f", timer / 60.0), 200, 200);
@@ -495,17 +531,16 @@ public class GameScreen extends Screen {
 			surface.text(String.format("Runner $: %d", runner.getCash()), 200, 320);
 			surface.text(String.format("Hunter $: %d", hunter.getCash()), 200, 350);
 		} else {
+			surface.fill(200, 0, 0);
 			surface.text(String.format("%d", runner.getWins()), WIDTH - 20, HEIGHT / 2 - 30);
+			surface.fill(138, 110, 100);
 			surface.text("VS", WIDTH - 20, HEIGHT / 2);
+			surface.fill(0, 150, 200);
 			surface.text(String.format("%d", hunter.getWins()), WIDTH - 20, HEIGHT / 2 + 30);
 		}
 		
 		// Post drawing
 		surface.popStyle();
-	}
-	
-	private boolean hunterAlive() {
-		return hunterRespawn < 0;
 	}
 	
 	private void spawnRunner() {
@@ -519,8 +554,8 @@ public class GameScreen extends Screen {
 	}
 	
 	private void spawnHunter() {
-		// Do not spawn hunter on top of obstacles or bullets (20 attempts max)
-		for (int i = 0; i < 20; i++) {
+		// Do not spawn hunter on top of obstacles or bullets (50 attempts max)
+		for (int i = 0; i < 50; i++) {
 			// Random x to avoid spawn camping
 			hunter.setX(25 + (int) (Math.random() * (WIDTH - 50)));
 			hunter.setY(400);
@@ -594,12 +629,12 @@ public class GameScreen extends Screen {
 	 */
 	public void prepareRound() {
 		runner.changeCash(50);
-		hunter.changeCash(50);
+		hunter.changeCash(75);
 		// Reset some stats
 		runner.setMaxHealth(100);
 		hunter.setMaxHealth(100);
-		runner.setToRifle();
-		hunter.setToRifle();
+		runner.setToNone();
+		hunter.setToNone();
 		surface.switchScreen(DrawingSurface.SHOP_SCREEN);
 	}
 	
@@ -613,15 +648,18 @@ public class GameScreen extends Screen {
 		bullets.clear();
 		healthPickups.clear();
 		moneyPickups.clear();
-		goalReached = false;
 		timer = 0;
 		hunterRespawn = -1;
+		goalReached = false;
 		
 		// Choose the map
-		map = new Map("map1.txt", this);
+		String[] maps = new String[] {"map1", "map2"};
+		int choice = (int) (Math.random() * maps.length);
+		map = new Map(maps[choice], this);
 		map.generate();
 		spawnRunner();
 		spawnHunter();
+		runnerAI.init();
 		surface.playMusic(map.getSong());
 	}
 	
@@ -634,7 +672,8 @@ public class GameScreen extends Screen {
 			surface.playSoundEffect("kahootGong.mp3");
 			runner.setWins(runner.getWins() + 1);
 			hunter.setLosses(hunter.getLosses() + 1);
-			runner.changeCash(50);
+			runner.changeCash(30);
+			hunter.changeCash((int) (50.0 * runner.getHealth() / runner.getMaxHealth()));
 		} else if (runner.getHealth() <= 0) {
 			surface.playSoundEffect("boom.mp3");
 			hunter.setWins(hunter.getWins() + 1);
@@ -651,18 +690,10 @@ public class GameScreen extends Screen {
 			surface.switchScreen(DrawingSurface.WIN_SCREEN);
 			return;
 		}
+		// Record path
+		if (RECORD_PATH)
+			runnerAI.printPath();
 		// Maybe wait a bit before advancing?
-		// For now, no swap
-		// Swap stats
-//		int temp = runner.getWins();
-//		runner.setWins(hunter.getWins());
-//		hunter.setWins(temp);
-//		temp = runner.getLosses();
-//		runner.setLosses(hunter.getLosses());
-//		hunter.setLosses(temp);
-//		temp = runner.getCash();
-//		runner.setCash(hunter.getCash());
-//		hunter.setCash(temp);
 		prepareRound();
 	}
 	
@@ -672,11 +703,19 @@ public class GameScreen extends Screen {
 	public void startGame() {
 		runner.setLosses(0);
 		runner.setWins(0);
-		runner.setCash(0);
+		runner.setCash(75);
 		hunter.setLosses(0);
 		hunter.setWins(0);
-		hunter.setCash(0);
+		hunter.setCash(50);
 		prepareRound();
+	}
+	
+	/**
+	 * Returns whether the hunter is alive.
+	 * @return The result.
+	 */
+	public boolean hunterAlive() {
+		return hunterRespawn < 0;
 	}
 	
 	/**
@@ -696,11 +735,73 @@ public class GameScreen extends Screen {
 	}
 	
 	/**
+	 * Gets the current Map.
+	 * @return The map.
+	 */
+	public Map getMap() {
+		return map;
+	}
+	
+	/**
+	 * Gets the list of bullets.
+	 * @return An ArrayList.
+	 */
+	public ArrayList<Bullet> getBullets() {
+		return bullets;
+	}
+	
+	/**
+	 * Gets the list of obstacles.
+	 * @return An ArrayList.
+	 */
+	public ArrayList<Obstacle> getObstacles() {
+		return obstacles;
+	}
+	
+	/**
+	 * Gets the list of health pickups.
+	 * @return An ArrayList.
+	 */
+	public ArrayList<HealthPack> getHealthPickups() {
+		return healthPickups;
+	}
+	
+	/**
+	 * Gets the list of money pickups.
+	 * @return An ArrayList.
+	 */
+	public ArrayList<Money> getMoneyPickups() {
+		return moneyPickups;
+	}
+	
+	/**
 	 * Gets the current value of the game timer (in frames)
 	 * @return The value of the game timer.
 	 */
 	public int getTimer() {
 		return timer;
+	}
+	
+	/**
+	 * Checks if runner AI is on (singleplayer).
+	 * @return The result.
+	 */
+	public boolean isSingleplayer() {
+		return runnerAI.isEnabled();
+	}
+	
+	/**
+	 * Enables runner AI (singleplayer).
+	 */
+	public void enableSingleplayer() {
+		runnerAI.setEnabled(true);
+	}
+	
+	/**
+	 * Disables runner AI (multiplayer).
+	 */
+	public void disableSingleplayer() {
+		runnerAI.setEnabled(false);
 	}
 	
 }

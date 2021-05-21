@@ -9,10 +9,10 @@ import processing.core.PApplet;
 public class Shotgun extends Weapon{
 	
 	private static final String FILE_IMAGE_NAME = "Shotgun.png";
-	private static final int INIT_DURATION = 20;
-	private static final int INIT_DAMAGE = 60;
+	private static final int INIT_DURATION = 18;
+	private static final int INIT_DAMAGE = 50;
 	private static final int INIT_SPEED = 7;
-	private static final int INIT_MAX_DELAY = 25;
+	private static final int INIT_MAX_DELAY = 30;
 	private static final double BULLET_SPREAD = Math.PI/6;
 	private int bullets;
 	
