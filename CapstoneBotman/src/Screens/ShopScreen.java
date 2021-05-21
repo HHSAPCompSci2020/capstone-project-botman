@@ -534,7 +534,7 @@ public class ShopScreen extends Screen {
 						System.out.println("Hunter bought full armor ($50)");
 					}
 
-					run.setCash(hCash);
+					hunt.setCash(hCash);
 
 					hunterShield = 50;
 				}
