@@ -120,26 +120,34 @@ public abstract class Player extends Sprite{
 	@Override
 	public void translate(int x, int y) {
 		super.translate(x, y);
-		weapon.translate(x, y);
+		if(weapon != null) {
+			weapon.translate(x, y);
+		}
 	}
 	/**
 	 * translate the player according to its velocity
 	 */
 	public void move() {
 		super.translate(vX, vY);
-		weapon.translate(vX, vY);
+		if(weapon != null) {
+			weapon.translate(vX, vY);
+		}
 	}
 	
 	@Override 
 	public void setY(int y) {
 		super.setY(y);
-		weapon.setY(y);
+		if(weapon != null) {
+			weapon.setY(y);
+		}
 	}
 	
 	@Override 
 	public void setX(int x) {
 		super.setX(x);
-		weapon.setX(x);
+		if(weapon != null) {
+			weapon.setX(x);
+		}
 	}
 	
 	/**

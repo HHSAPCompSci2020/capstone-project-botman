@@ -39,8 +39,8 @@ Pause menu
 
 Ingame controls
 Hunter: Arrow keys to move, mouse left-click to shoot, rifle follows mouse pointer
-Runner: WASD to move, space to shoot, G to rotate left, H to rotate right[d][e]
-Escape to pause[f][g]
+Runner: WASD to move, space to shoot, G to rotate left, H to rotate right
+P to pause
 
 
 
