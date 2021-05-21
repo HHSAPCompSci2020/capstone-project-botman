@@ -5,6 +5,7 @@ import g4p_controls.GButton;
 import g4p_controls.GEvent;
 import g4p_controls.GLabel;
 import processing.core.PConstants;
+import processing.core.PImage;
 
 /**
  * This is the instructions screen that is displayed when the instructions button is clicked from other screens in the game
@@ -38,6 +39,9 @@ public class InstructionScreen extends Screen{
 	 * Label that does not do anything currently
 	 */
 	GLabel instructions;
+	
+	// backgorund
+	PImage back;
 	
 	/**
 	 * Sets up x and y to an initial value of 0 and stores the width, height, and surface locally
@@ -98,10 +102,10 @@ public class InstructionScreen extends Screen{
 		surface.text("Hunter: \nWASD to move\nMouse to aim\nMouse left click to shoot", 200, 400);
 		
 		surface.fill(255, 0, 0);
-		surface.text("Controls:\nArrow keys to move\nG to rotate aim left\nH to rotate aim right\nSpace to shoot", 200, 275);
+		surface.text("Runner:\nArrow keys to move\nG to rotate aim left\nH to rotate aim right\nSpace to shoot", 200, 275);
 		
 		surface.textSize(13);
-		surface.fill(0, 0, 255);
+		surface.fill(255, 255, 255);
 		surface.text("Objective: \nRunner needs to survive 30s without dying to win that round\n and during that time\n Hunter needs to kill the Runner to win that round\n(Hunter respawns 5s after being killed)\nThe winner is the one who wins three rounds first.", 200, 150);
 	}
 	

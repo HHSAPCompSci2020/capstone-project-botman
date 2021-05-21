@@ -131,12 +131,12 @@ public class ShopScreen extends Screen {
 
 	private int hCash;
 	private int rCash;
-	
+
 	Screen gameScreen;
 
 	Runner run;
 	Hunter hunt;
-	
+
 	/**
 	 * Sets up x, y, hunterShield, and runnerShield to an initial value of 0, sets
 	 * up nextVisislbe and hShop to true, and sets up rCash and hCash to 1000, and
@@ -156,12 +156,10 @@ public class ShopScreen extends Screen {
 		hunterShield = 0;
 		runnerShield = 0;
 
-		
-		
-		//gameScreen = surface.getScreen(surface.GAME_SCREEN);
-		
-		//hCash = 1000;
-		//rCash = 1000;
+		// gameScreen = surface.getScreen(surface.GAME_SCREEN);
+
+		// hCash = 1000;
+		// rCash = 1000;
 
 		x = 0;
 		y = 0;
@@ -221,23 +219,21 @@ public class ShopScreen extends Screen {
 
 		halfArmor.setVisible(false);
 		fullArmor.setVisible(false);
-		
-		
+
 	}
 
 	/**
 	 * Draws the title and buttons on the screen
 	 */
 	public void draw() {
-		
+
 		gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
 		run = ((GameScreen) gameScreen).getRunner();
 		hunt = ((GameScreen) gameScreen).getHunter();
-		
+
 		hCash = hunt.getCash();
 		rCash = run.getCash();
-		
-		
+
 		surface.pushStyle();
 		surface.background(255, 255, 255);
 
@@ -254,10 +250,12 @@ public class ShopScreen extends Screen {
 		fullArmor.setVisible(true);
 
 		// exit.setVisible(true);
-		if (nextVisible)
+		if (nextVisible && !(((GameScreen) gameScreen).isSingleplayer()))
 			next.setVisible(true);
-		else
+		else {
 			next.setVisible(false);
+			exit.setVisible(true);
+		}
 
 		rifle.draw(surface);
 		sniper.draw(surface);
@@ -295,30 +293,47 @@ public class ShopScreen extends Screen {
 	 * @param event  Event which gets performed on the button
 	 */
 	public void handleButtonEvents(GButton button, GEvent event) {
-		
-		
-		//hunt.setCash(1000);
-		//run.setCash(1000);
+
+		// hunt.setCash(1000);
+		// run.setCash(1000);
 
 		// exit button
 		if (button == exit && event == GEvent.CLICKED) {
-			gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
-			if (gameScreen instanceof GameScreen) {
-				// ((GameScreen) gameScreen).beginRound();
-				((GameScreen) gameScreen).beginRound();
+			if (((GameScreen) gameScreen).isSingleplayer()) {
+				int rand = (int) (Math.random() * 3);
+				int randA = (int) (Math.random() * 3);
+				
+				if (rand == 0) {
+					run.setToRifle();
+					System.out.println("Runner bought rifle ($100)");
+				}
+				if (rand == 1) {
+					run.setToSniper();
+					System.out.println("Runner bought sniper ($150)");
+				}
+				if (rand == 2) {
+					run.setToShotgun();
+					System.out.println("Runner bought shotgun ($75)");
+				}
+				
+				if (randA == 0) {
+					run.setMaxHealth(100);
+					System.out.println("Runner bought no armor ($0)");
+					runnerShield = 0;
+				}
+				if (randA == 1) {
+					run.setMaxHealth(125);
+					System.out.println("Runner bought half armor ($25)");
+					runnerShield = 25;
+				}
+				if (randA == 2) {
+					run.setMaxHealth(150);
+					System.out.println("Runner bought half armor ($50)");
+					runnerShield = 50;
+				}
 			}
-
-			// removes buttons
-			exit.setVisible(false);
-			next.setVisible(false);
-			rButton.setVisible(false);
-			sButton.setVisible(false);
-			shButton.setVisible(false);
-			halfArmor.setVisible(false);
-			fullArmor.setVisible(false);
-			hShop = true;
-			nextVisible = true;
-			runnerShield = 0;
+			
+			exitShopScreen();
 		}
 
 		// next button
@@ -337,8 +352,6 @@ public class ShopScreen extends Screen {
 			// surface.switchScreen(surface.SHOP_SCREEN);
 
 			// Screen gameScreen = surface.getScreen(surface.GAME_SCREEN);
-
-			
 
 			hCash = hunt.getCash();
 
@@ -556,7 +569,7 @@ public class ShopScreen extends Screen {
 					if (rCash >= 25 && gameScreen instanceof GameScreen && runnerShield == 0) {
 						// rCash += 100;
 						rCash -= 25;
-						//System.out.println(rCash);
+						// System.out.println(rCash);
 						run.setCash(rCash - 25);
 						run.setMaxHealth(125);
 						System.out.println("Runner bought half armor ($25)");
@@ -592,6 +605,28 @@ public class ShopScreen extends Screen {
 
 		// if
 	}
+
+	private void exitShopScreen() {
+		gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
+		if (gameScreen instanceof GameScreen) {
+			// ((GameScreen) gameScreen).beginRound();
+			((GameScreen) gameScreen).beginRound();
+		}
+
+		// removes buttons
+		exit.setVisible(false);
+		next.setVisible(false);
+		rButton.setVisible(false);
+		sButton.setVisible(false);
+		shButton.setVisible(false);
+		halfArmor.setVisible(false);
+		fullArmor.setVisible(false);
+		hShop = true;
+		nextVisible = true;
+		hunterShield = 0;
+		runnerShield = 0;
+	}
+
 	// public
 
 }

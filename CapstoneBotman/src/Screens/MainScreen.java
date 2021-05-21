@@ -33,17 +33,20 @@ public class MainScreen extends Screen {
 	/**
 	 * Button that leads to the instructions screen
 	 */
-	GButton instructions;
+	private GButton instructions;
 
 	/**
 	 * Button that leads to the play screen
 	 */
-	GButton play;
+	private GButton playM;
+	
+	// play single player
+	private GButton playS;
 
 	/**
 	 * Title that does not display anything currently
 	 */
-	GLabel title;
+	private GLabel title;
 
 	/**
 	 * Sets up x and y to an initial value of 0 and stores the width, height, and
@@ -67,14 +70,17 @@ public class MainScreen extends Screen {
 	 */
 	public void setup() {
 		instructions = new GButton(surface, 90, 100, 200, 50, "Instructions");
-		play = new GButton(surface, 90, 175, 200, 50, "Play");
+		playM = new GButton(surface, 90, 175, 200, 50, "Play Multiplayer");
+		playS = new GButton(surface, 90, 250, 200, 50, "Play Singleplayer");
 
 		// title.addEventHandler(instructions, "handleButtonEvents");
 		instructions.addEventHandler(this, "handleButtonEvents");
-		play.addEventHandler(this, "handleButtonEvents");
+		playM.addEventHandler(this, "handleButtonEvents");
+		playS.addEventHandler(this, "handleButtonEvents");
 
 		instructions.setVisible(false);
-		play.setVisible(false);
+		playM.setVisible(false);
+		playS.setVisible(false);
 	}
 
 	/**
@@ -86,7 +92,8 @@ public class MainScreen extends Screen {
 		surface.fill(255, 255, 0);
 
 		instructions.setVisible(true);
-		play.setVisible(true);
+		playM.setVisible(true);
+		playS.setVisible(true);
 
 		// draws title and buttons
 //		title = new GLabel(surface, 150, 50, 500, 50, "VALHUNT");
@@ -111,15 +118,17 @@ public class MainScreen extends Screen {
 
 			// removes buttons
 			instructions.setVisible(false);
-			play.setVisible(false);
+			playM.setVisible(false);
+			playS.setVisible(false);
 		}
 
 		// if play is clicked, switch to game screen
-		if (button == play && event == GEvent.CLICKED) {
+		if (button == playM && event == GEvent.CLICKED) {
 			// gameScreen switch
 			Screen gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
 			if (gameScreen instanceof GameScreen) {
 				//((GameScreen) gameScreen).beginRound();
+				((GameScreen) gameScreen).useMultiplayer();
 				((GameScreen) gameScreen).startGame();
 			}
 			
@@ -127,7 +136,25 @@ public class MainScreen extends Screen {
 
 			// removes buttons
 			instructions.setVisible(false);
-			play.setVisible(false);
+			playM.setVisible(false);
+			playS.setVisible(false);
+		}
+		
+		if (button == playS && event == GEvent.CLICKED) {
+			// gameScreen switch
+			Screen gameScreen = surface.getScreen(DrawingSurface.GAME_SCREEN);
+			if (gameScreen instanceof GameScreen) {
+				//((GameScreen) gameScreen).beginRound();
+				((GameScreen) gameScreen).useSingleplayer();
+				((GameScreen) gameScreen).startGame();
+			}
+			
+			//surface.switchScreen(surface.SHOP_SCREEN);
+
+			// removes buttons
+			instructions.setVisible(false);
+			playM.setVisible(false);
+			playS.setVisible(false);
 		}
 	}
 
