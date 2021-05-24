@@ -131,7 +131,7 @@ Credits:
    * Aayush
       * Screens Package(except GameScreen) - MainScreen, Shop Screen, etc. 
    * Kyle
-      * Game development(GameScreen, DrawingScreen, Main, and Map)
+      * Game (GameScreen, DrawingScreen, Main, Map, RunnerAI)
    * Outside resources 
       * Processing Library - UI
       * Sound Effects - Kahoot, https://www.youtube.com/watch?v=DKoSh6J44SE, 
