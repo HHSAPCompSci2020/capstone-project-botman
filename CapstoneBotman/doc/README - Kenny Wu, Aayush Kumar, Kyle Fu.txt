@@ -10,8 +10,8 @@ Introduction:
 Our program is a two player video game called “VALHUNT”. 
 The goals of the game differ depending on the player and will oppose each other. 
 The program/game is directed for people who enjoy playing small party games with each other.
-The first goal (runner) is for the player to stay alive till the timer runs out and 
-cross the finish line.[a] However if the runner were to be “defeated” by the hunter, 
+The first goal (runner) is for the player to stay alive till the timer runs out and the runner
+crosses the finish line. However if the runner were to be “defeated” by the hunter, 
 he loses. The 2nd goal (hunter) is to stop the runner from crossing the finish line 
 before time runs out. The game features multiple rounds where after each round 
 the winner and loser gains a set of money (less of loser, more for winner). The money can 
@@ -47,24 +47,23 @@ P to pause
 
 Must-have Features:
 * Rounds
-   * Functioning Round Timer
+   * Functioning Round Timer/Finish Line
    * First to 3 wins
-   * Switch roles after each round[h]
 * 2d scrolling world
    * Constantly scrolls down (sort of like Space Invaders)
-   * Top-down view[i]
+   * Top-down view
 * Shop & cash system
    * Earn money for winning rounds, less for losing
       * Also through pickups (want-to-have)
-   * Buy guns to inflict more damage[j]
-   * Buy armor to protect against damage[k]
+   * Buy guns to inflict more damage
+   * Buy armor to protect against damage
 * Obstacles / Walls
    * Players can get pushed by the walls, and if a player gets pouches off screen, they “die”
-      * Hunters will respawn if they “die”, but if a runner dies, the round ends and the hunter wins a point[l]
+      * Hunters will respawn if they “die”, but if a runner dies, the round ends and the hunter wins a point
 * Sprites and sound effects for players, items, etc.
    * Gun sounds
 * Win condition
-   * For a round, the runner needs to survive for thirty seconds to earn a point, and the hunter needs to kill the runner to earn a point
+   * For a round, the runner needs to survive for thirty seconds and reach goal to earn a point, and the hunter needs to kill the runner to earn a point
    * After one player earns 3 points, the game is over and that player wins
 
 
@@ -111,7 +110,9 @@ Class List:
    * Obstacle - Obstacle class to block players 
    * Goal - the object for runner to reach to 
    * Bullet - Class to represent the bullets shot by the weapons
-* GUI - abstract class containing helper methods to make menus[n]
+   * HealthPack - Health pickup in game
+   * Money - Cash pickup in game
+* GUI - abstract class containing helper methods to make menus
    * ShopScreen - menu at the beginning of the round where both players shop for weapons[o]
    * PauseScreen - menu that shows up when the game is paused
    * MainMenu - main menu displayed when the program is launched
