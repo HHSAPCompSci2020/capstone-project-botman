@@ -669,12 +669,14 @@ public class GameScreen extends Screen {
 	 */
 	public void endRound() {
 		if (goalReached) {
+			System.out.println("Runner wins (reached the goal)");
 			surface.playSoundEffect("kahootGong.mp3");
 			runner.setWins(runner.getWins() + 1);
 			hunter.setLosses(hunter.getLosses() + 1);
 			runner.changeCash(30);
 			hunter.changeCash((int) (50.0 * runner.getHealth() / runner.getMaxHealth()));
 		} else if (runner.getHealth() <= 0) {
+			System.out.println("Hunter wins (killed the runner)");
 			surface.playSoundEffect("boom.mp3");
 			hunter.setWins(hunter.getWins() + 1);
 			runner.setLosses(runner.getLosses() + 1);
