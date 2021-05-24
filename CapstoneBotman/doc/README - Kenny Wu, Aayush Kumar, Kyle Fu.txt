@@ -120,6 +120,7 @@ Class List:
    * WinScreen - Screen to display which player wins at end of game
    * Screen - Interface used to help create screens and provide basic behaviors for screens
 * Map - class that generates scrolling map along with generating the locations of obstacles and pickups in the maps
+* RunnerAI - Basic AI class that runs a bot for in place of the Runner 
  
 
 
