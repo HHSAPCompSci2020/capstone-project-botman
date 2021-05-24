@@ -106,7 +106,7 @@ public class InstructionScreen extends Screen{
 		
 		surface.textSize(13);
 		surface.fill(255, 255, 255);
-		surface.text("Objective: \nRunner needs to survive 30s without dying to win that round\n and during that time\n Hunter needs to kill the Runner to win that round\n(Hunter respawns 5s after being killed)\nThe winner is the one who wins three rounds first.", 200, 150);
+		surface.text("Objective: \nRunner needs to survive without dying to win that round\n and during that time\n Hunter needs to kill the Runner to win that round\n(Hunter respawns 5s after being killed)\nThe winner is the one who wins three rounds first.", 200, 150);
 	}
 	
 	/**
