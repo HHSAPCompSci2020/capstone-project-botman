@@ -30,7 +30,7 @@ public class GameScreen extends Screen {
 	/**
 	 * Whether the runner path should be recorded.
 	 */
-	public static final boolean RECORD_PATH = true;
+	public static final boolean RECORD_PATH = false;
 	
 	/**
 	 * The rotation speed of the runner, in radians.
